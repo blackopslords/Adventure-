@@ -1,0 +1,3 @@
+# Place your Discord profile screenshots and backdrop images in this folder.
+# Example reference in src/data/teamProfiles.ts:
+# posterUrl: './images/member1.png'
