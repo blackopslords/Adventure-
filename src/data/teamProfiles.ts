@@ -48,18 +48,18 @@ const BASE_TEAM_PROFILES: TeamProfile[] = [
     id: 'kaisar-founder',
     indexLabel: '01',
     name: 'Arhan Ishaq',
-    discordHandle: '@kaisar.dev',
+    discordHandle: '@Arhanhere',
     roleTitle: 'Server Founder & Owner',
     division: 'founders',
     joinedYear: 'Since 2022',
     badgeCode: 'OWNER',
-    specialty: 'Server Architecture · Community Vision · Core Panel',
+    specialty: 'Tadaaa',
     backdropUrl: bgSirenAbyss,
     posterUrl: posterSirenAbyss,
     customText:
-      'Architect of our Discord sanctuary. Leading server culture, bot infrastructure, and welcoming every new member into the community.',
+      'I hope you heal from the things you dont talk about.',
     panelNote:
-      'Click "Edit Profile & Text" anytime to paste your own bio, drop in your real Discord profile screenshot, and attach custom theme music.',
+      'Quiet presence',
     trackId: 'abyss-synth',
   },
   {
