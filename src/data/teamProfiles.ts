@@ -49,7 +49,7 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
   {
     id: 'kaisar-founder',
     indexLabel: '01',
-    name: 'Kaisar Sakib',
+    name: 'Arhan Ishaq',
     discordHandle: '@kaisar.dev',
     roleTitle: 'Server Founder & Owner',
     division: 'founders',
@@ -70,12 +70,12 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
   {
     id: 'arjun-admin',
     indexLabel: '02',
-    name: 'Arjun Vance',
+    name: 'Rahat Bhai',
     discordHandle: '@arjun.ops',
     roleTitle: 'Head Administrator',
     division: 'admins',
     joinedYear: 'Since 2023',
-    badgeCode: 'ADMIN',
+    badgeCode: 'OWNER',
     specialty: 'Permissions · Automation · Voice Channels',
     backdropUrl: bgCretaceousHorizon,
     posterUrl: posterCretaceousHorizon,

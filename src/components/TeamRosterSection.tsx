@@ -78,19 +78,30 @@ export function TeamRosterSection({
                   aria-selected={isSelected}
                   type="button"
                   onClick={() => onSelectFilter(tab.id)}
-                  className={`px-3.5 py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48] ${
+                  className={`relative p-[1.5px] overflow-hidden rounded-lg transition-all duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48] ${
                     isSelected
-                      ? 'bg-[#E11D48] text-white'
-                      : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                      ? 'shadow-[0_0_16px_rgba(225,29,72,0.45)]'
+                      : 'hover:bg-white/5'
                   }`}
                 >
-                  <span>{tab.label}</span>
+                  {isSelected && (
+                    <span aria-hidden="true" className="role-border-beam" />
+                  )}
                   <span
-                    className={`ml-1.5 font-mono text-[11px] tabular-nums ${
-                      isSelected ? 'text-white/90' : 'text-neutral-500'
+                    className={`relative z-10 inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-medium rounded-[6.5px] ${
+                      isSelected
+                        ? 'bg-[#E11D48] text-white'
+                        : 'text-neutral-300 hover:text-white'
                     }`}
                   >
-                    {count}
+                    <span>{tab.label}</span>
+                    <span
+                      className={`ml-1.5 font-mono text-[11px] tabular-nums ${
+                        isSelected ? 'text-white/90' : 'text-neutral-500'
+                      }`}
+                    >
+                      {count}
+                    </span>
                   </span>
                 </button>
               );

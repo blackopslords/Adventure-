@@ -15,7 +15,6 @@ import {
 import { useEffect, useState } from 'react';
 import { TeamProfile } from '../data/teamProfiles';
 import { BUILT_IN_TRACKS } from '../utils/profileAudio';
-import { ButterflyNebulaCanvas } from './ButterflyNebulaCanvas';
 import { ResilientImage } from './ResilientImage';
 
 interface HeroCarouselProps {
@@ -117,9 +116,6 @@ export function HeroCarousel({
         <div className="absolute inset-0 bg-gradient-to-t from-[#070709] via-transparent to-[#070709]/65" />
       </div>
 
-      {/* Twin Glowing Butterflies with Luminous Smoke & Stardust Trails */}
-      <ButterflyNebulaCanvas />
-
       {/* Main Split Content Container */}
       <div className="relative z-10 max-w-[1440px] w-full mx-auto px-6 md:px-12 my-auto py-6 lg:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -145,8 +141,11 @@ export function HeroCarousel({
 
             {/* Unboxed Metadata Line */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm sm:text-base font-medium text-neutral-200 tabular-nums">
-              <span className="text-white font-semibold bg-[#E11D48] px-2 py-0.5 rounded text-xs tracking-wide">
-                {activeProfile.badgeCode}
+              <span className="relative inline-flex p-[1.5px] rounded-md overflow-hidden align-middle shadow-[0_0_16px_rgba(225,29,72,0.5)]">
+                <span aria-hidden="true" className="role-border-beam" />
+                <span className="relative z-10 inline-flex items-center px-2.5 py-0.5 rounded-[5px] bg-[#E11D48] text-white font-semibold text-xs tracking-wider uppercase">
+                  {activeProfile.badgeCode}
+                </span>
               </span>
               <span className="text-neutral-500" aria-hidden="true">
                 ·
