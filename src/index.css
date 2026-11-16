@@ -3,6 +3,7 @@
 
 @theme {
   --font-display: "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: "Cinzel", "Cormorant Garamond", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
@@ -102,8 +103,38 @@
   pointer-events: none;
 }
 
+@keyframes planetSpinSlow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: translateY(-7px) rotate(5deg) scale(1.022);
+  }
+}
+
+.animate-planet-spin-slow {
+  animation: planetSpinSlow 14s ease-in-out infinite;
+}
+
+@keyframes ringedPlanetOrbit {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-1.5deg) scale(1);
+  }
+  50% {
+    transform: translateY(-7px) rotate(2deg) scale(1.02);
+  }
+}
+
+.animate-ringed-planet {
+  animation: ringedPlanetOrbit 10s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-cinema-backdrop {
+  .animate-cinema-backdrop,
+  .animate-planet-spin-slow,
+  .animate-ringed-planet {
     animation: none;
   }
 }

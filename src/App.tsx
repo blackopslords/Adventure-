@@ -345,6 +345,8 @@ export default function App() {
 
         <ProfileSpotlight
           profile={activeProfile}
+          allProfiles={profiles}
+          onActivateProfile={handleActivateById}
           isMusicPlaying={isMusicPlaying}
           onToggleMusic={handleToggleMusic}
           onSaveQuickText={handleSaveQuickText}
