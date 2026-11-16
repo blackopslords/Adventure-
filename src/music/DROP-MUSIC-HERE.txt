@@ -1,0 +1,18 @@
+AUTOMATIC BACKGROUND MUSIC FOLDER (NO CODE EDIT NEEDED)
+======================================================
+
+Just drag & drop or upload your audio files (.mp3, .wav, .ogg, .m4a) into this folder:
+
+  01.mp3  (or 01-anything.mp3)  -> Profile 01 background music
+  02.mp3  (or 02-anything.mp3)  -> Profile 02 background music
+  03.mp3  (or 03-anything.mp3)  -> Profile 03 background music
+  04.mp3  (or 04-anything.mp3)  -> Profile 04 background music
+  05.mp3  (or 05-anything.mp3)  -> Profile 05 background music
+
+Note for Profile 01:
+- "01-default-theme.mp3" is the starter track.
+- If you upload your own "01.mp3" or "01-song.mp3" here, it automatically overrides the default track!
+- Or you can simply delete the old file and drop in the new one.
+
+You can also name files by the member's first name (e.g. "rahat.mp3", "zara.mp3").
+Works automatically both here and when uploaded directly to GitHub!

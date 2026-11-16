@@ -1,3 +1,4 @@
+import { applyFolderMediaOverrides } from '../utils/folderMediaLoader';
 import { BuiltInTrackId } from '../utils/profileAudio';
 import bgSirenAbyss from '../assets/images/bg_siren_abyss_1794824346199.jpg';
 import posterSirenAbyss from '../assets/images/poster_siren_abyss_1794824345515.jpg';
@@ -31,19 +32,16 @@ export interface TeamProfile {
   customAudioUrl?: string;
 }
 
-export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
+const BASE_TEAM_PROFILES: TeamProfile[] = [
   /*
    * ============================================================================
-   * HOW TO EDIT PICTURES, MUSIC & PROFILE INFO ON GITHUB:
-   * 1. Put your Discord profile screenshots inside: public/images/
-   *    -> Then set: posterUrl: './images/your-screenshot.png'
-   *    -> And background photo: backdropUrl: './images/your-bg.jpg'
+   * ZERO-CODE DRAG & DROP MEDIA FOLDERS:
+   * 1. Music: Drop 01.mp3, 02.mp3, 03.mp3, 04.mp3, 05.mp3 into -> src/music/
+   * 2. Card Photos: Drop 01.png, 02.png, ... into -> src/posters/
+   * 3. Hero Backgrounds: Drop 01.jpg, 02.jpg, ... into -> src/backdrops/
+   *    (Zero code edits needed! Files automatically match Profiles 01 - 05.)
    *
-   * 2. Put your .mp3 music files inside: public/music/
-   *    -> Then set: customAudioUrl: './music/your-song.mp3'
-   *    -> And song title: customTrackName: 'Your Song Name'
-   *
-   * 3. Edit name, discordHandle, roleTitle, badgeCode, specialty & customText below.
+   * 4. Edit text fields (name, discordHandle, roleTitle, badgeCode, customText) below.
    * ============================================================================
    */
   {
@@ -63,15 +61,12 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
     panelNote:
       'Click "Edit Profile & Text" anytime to paste your own bio, drop in your real Discord profile screenshot, and attach custom theme music.',
     trackId: 'abyss-synth',
-    customTrackName: 'Kaisar Sakib — Background Theme',
-    customAudioUrl:
-      './assets/aistudio/AQNn_NVValVvil3gXGdaifGW_hVRUAXG8MYeBx3AOO8X-zdlwvHNdt5iYkQz1izM7kL0MyD73wQVzXZzvFaCBKtHBKMy1QPgUlrr_011f6c43.mp3',
   },
   {
     id: 'arjun-admin',
     indexLabel: '02',
     name: 'Rahat Bhai',
-    discordHandle: '@arjun.ops',
+    discordHandle: '@RAHAT',
     roleTitle: 'Head Administrator',
     division: 'admins',
     joinedYear: 'Since 2023',
@@ -88,12 +83,12 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
   {
     id: 'rafi-commander',
     indexLabel: '03',
-    name: 'Rafi Ortega',
-    discordHandle: '@rafi.panel',
-    roleTitle: 'Senior Panel Lead',
+    name: 'Aurora',
+    discordHandle: '@aurora.only',
+    roleTitle: 'Senior',
     division: 'founders',
     joinedYear: 'Since 2023',
-    badgeCode: 'LEAD',
+    badgeCode: 'ADVISOR',
     specialty: 'Tournaments · Server Events · Partnerships',
     backdropUrl: bgIronCovenant,
     posterUrl: posterIronCovenant,
@@ -106,8 +101,8 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
   {
     id: 'zara-security',
     indexLabel: '04',
-    name: 'Zara Solberg',
-    discordHandle: '@zara.shield',
+    name: 'Cyrus',
+    discordHandle: '@proffessor27',
     roleTitle: 'Lead Moderator',
     division: 'moderators',
     joinedYear: 'Since 2024',
@@ -124,12 +119,12 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
   {
     id: 'clara-creative',
     indexLabel: '05',
-    name: 'Clara Bennett',
-    discordHandle: '@clara.art',
+    name: 'Eshad',
+    discordHandle: '@Eshad',
     roleTitle: 'Creative & Media Mod',
     division: 'moderators',
     joinedYear: 'Since 2024',
-    badgeCode: 'CREW',
+    badgeCode: 'MOD',
     specialty: 'Server Banners · Stickers · Stage Music',
     backdropUrl: bgHollowVault,
     posterUrl: posterHollowVault,
@@ -140,6 +135,9 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
     trackId: 'lantern-chime',
   },
 ];
+
+export const DEFAULT_TEAM_PROFILES: TeamProfile[] =
+  applyFolderMediaOverrides(BASE_TEAM_PROFILES);
 
 export const SERVER_PILLARS = [
   {

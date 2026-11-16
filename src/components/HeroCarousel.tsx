@@ -1,13 +1,10 @@
 import {
-  Bookmark,
-  Check,
   ChevronLeft,
   ChevronRight,
   Maximize2,
   Music,
-  Pause,
   PencilLine,
-  Play,
+  Users,
   Volume2,
   VolumeX,
   X,
@@ -50,7 +47,6 @@ export function HeroCarousel({
 }: HeroCarouselProps) {
   const [expandedProfile, setExpandedProfile] = useState<TeamProfile | null>(null);
   const activeProfile = profiles[activeIndex] ?? profiles[0];
-  const isStarred = starredIds.includes(activeProfile.id);
   const total = profiles.length;
 
   useEffect(() => {
@@ -167,20 +163,23 @@ export function HeroCarousel({
               </p>
             </div>
 
-            {/* Action Buttons: Play Music, Edit Text/Screenshot, Favorite */}
+            {/* Action Buttons: Liquid Web3 "Meet The Team" + Owner Edit */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 type="button"
-                onClick={onToggleMusic}
-                className="inline-flex items-center gap-2.5 px-6 py-3 text-sm font-semibold text-white bg-[#E11D48] hover:bg-[#BE123C] rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                onClick={() => {
+                  document
+                    .getElementById('roster')
+                    ?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="group relative inline-flex items-center p-1.5 pr-6 rounded-full overflow-hidden bg-white/[0.08] hover:bg-white/[0.15] backdrop-blur-xl border border-white/25 hover:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_12px_32px_rgba(0,0,0,0.55)] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                {isMusicPlaying ? (
-                  <Pause className="w-4 h-4 fill-current" aria-hidden="true" />
-                ) : (
-                  <Play className="w-4 h-4 fill-current" aria-hidden="true" />
-                )}
-                <span>
-                  {isMusicPlaying ? 'Pause Music' : 'Play Theme Music'}
+                <span aria-hidden="true" className="liquid-web3-sheen" />
+                <span className="liquid-orb-ring relative z-10 inline-flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-white/30 via-[#E11D48]/35 to-black/40 border border-white/55 text-white transition-transform duration-200 group-hover:scale-105">
+                  <Users className="w-4 h-4" aria-hidden="true" />
+                </span>
+                <span className="relative z-10 ml-3 text-sm font-semibold tracking-wide text-white">
+                  Meet The Team
                 </span>
               </button>
 
@@ -188,32 +187,12 @@ export function HeroCarousel({
                 <button
                   type="button"
                   onClick={() => onOpenEditor(activeProfile)}
-                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-black/50 hover:bg-white/15 border border-white/25 rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-black/50 hover:bg-white/15 border border-white/25 rounded-full transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                   <PencilLine className="w-4 h-4" aria-hidden="true" />
                   <span>Edit Text &amp; Media</span>
                 </button>
               )}
-
-              <button
-                type="button"
-                onClick={() => onToggleStar(activeProfile.id)}
-                aria-label={
-                  isStarred ? 'Remove from favorites' : 'Save to favorites'
-                }
-                className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg border transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
-                  isStarred
-                    ? 'bg-white text-neutral-950 border-white hover:bg-neutral-200'
-                    : 'bg-black/45 text-white border-white/20 hover:bg-white/15'
-                }`}
-              >
-                {isStarred ? (
-                  <Check className="w-4 h-4" aria-hidden="true" />
-                ) : (
-                  <Bookmark className="w-4 h-4" aria-hidden="true" />
-                )}
-                <span>{isStarred ? 'Saved' : 'Favorite'}</span>
-              </button>
             </div>
           </div>
 
@@ -315,13 +294,13 @@ export function HeroCarousel({
                               className="w-full h-full object-cover"
                             />
 
-                            {/* Soft Glass Vignette & Bottom Frosted Glass Info Dock */}
+                            {/* Compact Bottom Scrim (No Blur so Portrait Shows in Full) */}
                             <div
-                              className={`absolute inset-x-0 bottom-0 pt-14 pb-4 px-4 bg-gradient-to-t from-black/92 via-black/68 to-transparent backdrop-blur-[4px] border-t border-white/10 transition-opacity duration-300 ${
+                              className={`absolute inset-x-0 bottom-0 pt-10 pb-3.5 px-4 bg-gradient-to-t from-black/85 via-black/35 to-transparent transition-opacity duration-300 ${
                                 isCenter ? 'opacity-100' : 'opacity-90'
                               }`}
                             >
-                              <div className="flex items-baseline justify-between gap-2 mb-1">
+                              <div className="flex items-baseline justify-between gap-2">
                                 <p className="font-display text-lg sm:text-xl font-semibold tracking-wide text-white truncate">
                                   {profile.name}
                                 </p>
@@ -329,14 +308,11 @@ export function HeroCarousel({
                                   {Number(profile.indexLabel)} / {total}
                                 </span>
                               </div>
-                              <p className="text-xs text-neutral-200 line-clamp-2 leading-relaxed">
-                                {isCenter ? profile.customText : profile.roleTitle}
+                              <p className="text-[11px] font-mono text-neutral-200/90 mt-0.5 truncate">
+                                {isCenter
+                                  ? `${profile.discordHandle} · ${profile.roleTitle}`
+                                  : profile.roleTitle}
                               </p>
-                              {isCenter && (
-                                <p className="text-[11px] font-mono text-neutral-300/90 mt-1.5 truncate">
-                                  {profile.discordHandle} · {profile.roleTitle}
-                                </p>
-                              )}
                             </div>
                           </button>
 
@@ -506,7 +482,7 @@ export function HeroCarousel({
               >
                 <X className="w-5 h-5" aria-hidden="true" />
               </button>
-              <div className="absolute inset-x-0 bottom-0 pt-16 pb-5 px-5 bg-gradient-to-t from-black/95 via-black/70 to-transparent backdrop-blur-[4px] border-t border-white/15">
+              <div className="absolute inset-x-0 bottom-0 pt-12 pb-5 px-5 bg-gradient-to-t from-black/90 via-black/45 to-transparent">
                 <p className="font-display text-2xl font-bold text-white">
                   {expandedProfile.name}
                 </p>

@@ -39,24 +39,18 @@ By default, **all edit buttons and text forms are hidden from public visitors**.
 > **Important Note for GitHub Pages (Static Hosting)**:
 > Edits made via **Edit Text & Media** in your browser preview are saved locally in your browser (`localStorage`). To make your updated pictures, text, and `.mp3` music visible to **all public visitors**, add them to your GitHub repository:
 
-### Permanent Update Steps for Public Visitors:
-1. Create `public/images/` and `public/music/` folders in your repository.
-2. Put your Discord screenshots (e.g. `kaisar.png`) in `public/images/` and `.mp3` files (e.g. `kaisar.mp3`) in `public/music/`.
-3. Update `src/data/teamProfiles.ts`:
+### Zero-Code Music & Photo Drop-In Folders (Recommended):
+You do **not** need to edit any code to change songs or pictures:
 
-```ts
-{
-  id: 'kaisar-founder',
-  name: 'Kaisar Sakib',
-  discordHandle: '@kaisar.dev',
-  roleTitle: 'Server Founder & Owner',
-  posterUrl: './images/kaisar.png',
-  backdropUrl: './images/kaisar-bg.jpg',
-  customAudioUrl: './music/kaisar.mp3',
-  customTrackName: 'Kaisar Theme',
-  customText: 'Your custom profile message here...',
-  // ...
-}
-```
+1. **Change Background Music (`.mp3`, `.wav`, `.ogg`, `.m4a`):**
+   - Upload or drag-and-drop files into **`src/music/`**
+   - Name them `01.mp3`, `02.mp3`, `03.mp3`, `04.mp3`, `05.mp3` (or `01-songname.mp3`, `02-songname.mp3`) — they automatically attach to Profile `01` through `05`!
+2. **Change Profile Card Photos (`.png`, `.jpg`, `.webp`):**
+   - Upload or drag-and-drop images into **`src/posters/`** named `01.png`, `02.png`, etc.
+3. **Change Hero Background Photos:**
+   - Upload or drag-and-drop wide images into **`src/backdrops/`** named `01.jpg`, `02.jpg`, etc.
+4. **Change Names, Handles, Roles, or Bio Text:**
+   - Edit `src/data/teamProfiles.ts`.
 
-4. Commit and push to GitHub — GitHub Pages automatically updates the live site for everyone!
+Commit or upload directly on GitHub — GitHub Actions automatically builds and updates the live website for all visitors!
+

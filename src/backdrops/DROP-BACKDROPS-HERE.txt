@@ -1,0 +1,10 @@
+AUTOMATIC HERO BACKGROUND PHOTO FOLDER (NO CODE EDIT NEEDED)
+============================================================
+
+Drag & drop or upload wide background images (.jpg, .png, .webp) into this folder:
+
+  01.jpg  -> Profile 01 background photo
+  02.jpg  -> Profile 02 background photo
+  03.jpg  -> Profile 03 background photo
+  04.jpg  -> Profile 04 background photo
+  05.jpg  -> Profile 05 background photo

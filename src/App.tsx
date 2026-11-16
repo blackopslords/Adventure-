@@ -10,33 +10,29 @@ import { DEFAULT_TEAM_PROFILES, TeamProfile } from './data/teamProfiles';
 import { profileAudio } from './utils/profileAudio';
 
 const PROFILES_STORAGE_KEY = 'discord_panel_profiles_v1';
+const DEFAULTS_SIG_KEY = 'discord_panel_defaults_sig_v1';
 const STARRED_STORAGE_KEY = 'discord_panel_starred_v1';
 const ADMIN_SESSION_KEY = 'discord_panel_owner_unlocked';
+
+const CURRENT_DEFAULTS_SIG = JSON.stringify(DEFAULT_TEAM_PROFILES);
 
 export default function App() {
   const [profiles, setProfiles] = useState<TeamProfile[]>(() => {
     try {
+      const savedSig = window.localStorage.getItem(DEFAULTS_SIG_KEY);
+      if (savedSig !== CURRENT_DEFAULTS_SIG) {
+        window.localStorage.setItem(DEFAULTS_SIG_KEY, CURRENT_DEFAULTS_SIG);
+        window.localStorage.setItem(
+          PROFILES_STORAGE_KEY,
+          JSON.stringify(DEFAULT_TEAM_PROFILES)
+        );
+        return DEFAULT_TEAM_PROFILES;
+      }
       const saved = window.localStorage.getItem(PROFILES_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((savedProfile: TeamProfile) => {
-            const defaultProfile = DEFAULT_TEAM_PROFILES.find(
-              (d) => d.id === savedProfile.id
-            );
-            if (
-              defaultProfile &&
-              !savedProfile.customAudioUrl &&
-              defaultProfile.customAudioUrl
-            ) {
-              return {
-                ...savedProfile,
-                customAudioUrl: defaultProfile.customAudioUrl,
-                customTrackName: defaultProfile.customTrackName,
-              };
-            }
-            return savedProfile;
-          });
+          return parsed;
         }
       }
     } catch {

@@ -1,0 +1,10 @@
+AUTOMATIC PROFILE CARD PHOTO FOLDER (NO CODE EDIT NEEDED)
+==========================================================
+
+Drag & drop or upload profile card images (.png, .jpg, .webp) into this folder:
+
+  01.png  (or 01-arhan.jpg)  -> Profile 01 card picture
+  02.png  (or 02-rahat.jpg)  -> Profile 02 card picture
+  03.png                     -> Profile 03 card picture
+  04.png                     -> Profile 04 card picture
+  05.png                     -> Profile 05 card picture
