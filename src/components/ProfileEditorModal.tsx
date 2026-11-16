@@ -1,4 +1,4 @@
-import { ImagePlus, Music, RotateCcw, Upload, X } from 'lucide-react';
+import { Film, ImagePlus, Music, RotateCcw, Upload, X } from 'lucide-react';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { TeamProfile } from '../data/teamProfiles';
 import { BUILT_IN_TRACKS, BuiltInTrackId } from '../utils/profileAudio';
@@ -32,6 +32,12 @@ export function ProfileEditorModal({
   const [customAudioUrl, setCustomAudioUrl] = useState<string | undefined>(
     undefined
   );
+  const [backdropVideoUrl, setBackdropVideoUrl] = useState<string | undefined>(
+    undefined
+  );
+  const [customVideoName, setCustomVideoName] = useState<string | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (!profile) return;
@@ -46,6 +52,8 @@ export function ProfileEditorModal({
     setTrackId(profile.trackId);
     setCustomTrackName(profile.customTrackName);
     setCustomAudioUrl(profile.customAudioUrl);
+    setBackdropVideoUrl(profile.backdropVideoUrl);
+    setCustomVideoName(undefined);
   }, [profile]);
 
   useEffect(() => {
@@ -86,6 +94,14 @@ export function ProfileEditorModal({
     setCustomTrackName(file.name.replace(/\.[^/.]+$/, ''));
   };
 
+  const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setBackdropVideoUrl(url);
+    setCustomVideoName(file.name);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onSaveProfile({
@@ -98,6 +114,7 @@ export function ProfileEditorModal({
       customText: customText.trim() || profile.customText,
       posterUrl,
       backdropUrl,
+      backdropVideoUrl,
       trackId,
       customTrackName,
       customAudioUrl,
@@ -168,6 +185,38 @@ export function ProfileEditorModal({
                   className="hidden"
                 />
               </label>
+              <div className="flex items-center gap-1.5">
+                <label className="flex-1 min-w-0 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg cursor-pointer transition-colors">
+                  <Film className="w-3.5 h-3.5 shrink-0 text-[#E11D48]" aria-hidden="true" />
+                  <span className="truncate">
+                    {customVideoName
+                      ? customVideoName
+                      : backdropVideoUrl
+                        ? 'Change BG Video'
+                        : 'Upload BG Video'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
+                    onChange={handleVideoUpload}
+                    className="hidden"
+                  />
+                </label>
+                {backdropVideoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBackdropVideoUrl(undefined);
+                      setCustomVideoName(undefined);
+                    }}
+                    title="Remove background video"
+                    aria-label="Remove background video"
+                    className="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-lg bg-white/5 hover:bg-[#E11D48]/20 text-neutral-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" aria-hidden="true" />
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Profile Fields & Audio */}

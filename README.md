@@ -49,7 +49,10 @@ You do **not** need to edit any code to change songs or pictures:
    - Upload or drag-and-drop images into **`src/posters/`** named `01.png`, `02.png`, etc.
 3. **Change Hero Background Photos:**
    - Upload or drag-and-drop wide images into **`src/backdrops/`** named `01.jpg`, `02.jpg`, etc.
-4. **Change Names, Handles, Roles, or Bio Text:**
+4. **Change Hero Background Videos (Muted, Low-Opacity Loop):**
+   - Upload or drag-and-drop `.mp4`, `.webm`, or `.mov` videos into **`src/videos/`**
+   - Name them `01.mp4`, `02.mp4`, `03.mp4`, `04.mp4`, `05.mp4` (or `01-name.mp4` / member first name) — they play muted at subtle opacity behind that profile's Hero slide without interfering with theme music!
+5. **Change Names, Handles, Roles, or Bio Text:**
    - Edit `src/data/teamProfiles.ts`.
 
 Commit or upload directly on GitHub — GitHub Actions automatically builds and updates the live website for all visitors!

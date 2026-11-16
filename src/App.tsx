@@ -78,6 +78,9 @@ export default function App() {
         customAudioUrl: p.customAudioUrl?.startsWith('blob:')
           ? undefined
           : p.customAudioUrl,
+        backdropVideoUrl: p.backdropVideoUrl?.startsWith('blob:')
+          ? undefined
+          : p.backdropVideoUrl,
       }));
       window.localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(serializable));
     } catch {

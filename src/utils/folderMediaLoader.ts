@@ -18,6 +18,11 @@ const backdropModules = import.meta.glob<string>(
   { eager: true, import: 'default' }
 );
 
+const videoModules = import.meta.glob<string>(
+  '../videos/*.{mp4,MP4,webm,WEBM,mov,MOV,m4v,M4V}',
+  { eager: true, import: 'default' }
+);
+
 interface MediaEntry {
   path: string;
   url: string;
@@ -34,7 +39,8 @@ function parseEntries(modules: Record<string, string>): MediaEntry[] {
       const baseName = fileName.replace(/\.[^/.]+$/, '').toLowerCase();
       const slotMatch = baseName.match(/^0*([1-9]\d*)(?:$|[-_.\s])/);
       const slotNumber = slotMatch ? Number(slotMatch[1]) : null;
-      const isDefaultPlaceholder = baseName === '01-default-theme';
+      const isDefaultPlaceholder =
+        baseName === '01-default-theme' || baseName === '04-sample-theme';
 
       return {
         path,
@@ -126,10 +132,12 @@ export function applyFolderMediaOverrides(
   const musicEntries = parseEntries(musicModules);
   const posterEntries = parseEntries(posterModules);
   const backdropEntries = parseEntries(backdropModules);
+  const videoEntries = parseEntries(videoModules);
 
   const unassignedMusic = buildUnassignedPool(baseProfiles, musicEntries);
   const unassignedPosters = buildUnassignedPool(baseProfiles, posterEntries);
   const unassignedBackdrops = buildUnassignedPool(baseProfiles, backdropEntries);
+  const unassignedVideos = buildUnassignedPool(baseProfiles, videoEntries);
 
   return baseProfiles.map((profile) => {
     const matchedMusic = findBestMatch(profile, musicEntries, unassignedMusic);
@@ -143,11 +151,13 @@ export function applyFolderMediaOverrides(
       backdropEntries,
       unassignedBackdrops
     );
+    const matchedVideo = findBestMatch(profile, videoEntries, unassignedVideos);
 
     return {
       ...profile,
       ...(matchedPoster ? { posterUrl: matchedPoster.url } : {}),
       ...(matchedBackdrop ? { backdropUrl: matchedBackdrop.url } : {}),
+      ...(matchedVideo ? { backdropVideoUrl: matchedVideo.url } : {}),
       ...(matchedMusic
         ? {
             customAudioUrl: matchedMusic.url,

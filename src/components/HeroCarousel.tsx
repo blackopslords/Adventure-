@@ -103,6 +103,18 @@ export function HeroCarousel({
                   isCurrent ? 'animate-cinema-backdrop' : ''
                 }`}
               />
+              {profile.backdropVideoUrl && isCurrent && (
+                <video
+                  key={profile.backdropVideoUrl}
+                  src={profile.backdropVideoUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  className="absolute inset-0 w-full h-full object-cover object-center opacity-45"
+                />
+              )}
             </div>
           );
         })}

@@ -1,0 +1,17 @@
+AUTOMATIC BACKGROUND VIDEO FOLDER (MUTED HERO LOOP - NO CODE EDIT NEEDED)
+==========================================================================
+
+Just drag & drop or upload your video files (.mp4, .webm, .mov, .m4v) here:
+
+  01.mp4  (or 01-anything.mp4)  -> Profile 01 background video (muted)
+  02.mp4  (or 02-anything.mp4)  -> Profile 02 background video (muted)
+  03.mp4  (or 03-anything.mp4)  -> Profile 03 background video (muted)
+  04.mp4  (or 04-anything.mp4)  -> Profile 04 background video (muted)
+  05.mp4  (or 05-anything.mp4)  -> Profile 05 background video (muted)
+
+Notes:
+- All background videos automatically play MUTED in a smooth loop at subtle low opacity
+  behind the Hero profile & 3D cards (your profile .mp3 music stays crystal clear!).
+- You can also name files by the member's first name (e.g. "arhan.mp4", "rahat.mp4").
+- "04-sample-theme.mp4" is the sample video for Profile 04. Dropping a new "04.mp4"
+  automatically overrides it!

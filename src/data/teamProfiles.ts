@@ -24,6 +24,7 @@ export interface TeamProfile {
   badgeCode: string;
   specialty: string;
   backdropUrl: string;
+  backdropVideoUrl?: string;
   posterUrl: string;
   customText: string;
   panelNote: string;
