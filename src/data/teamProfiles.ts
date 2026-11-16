@@ -63,6 +63,9 @@ export const DEFAULT_TEAM_PROFILES: TeamProfile[] = [
     panelNote:
       'Click "Edit Profile & Text" anytime to paste your own bio, drop in your real Discord profile screenshot, and attach custom theme music.',
     trackId: 'abyss-synth',
+    customTrackName: 'Kaisar Sakib — Background Theme',
+    customAudioUrl:
+      './assets/aistudio/AQNn_NVValVvil3gXGdaifGW_hVRUAXG8MYeBx3AOO8X-zdlwvHNdt5iYkQz1izM7kL0MyD73wQVzXZzvFaCBKtHBKMy1QPgUlrr_011f6c43.mp3',
   },
   {
     id: 'arjun-admin',

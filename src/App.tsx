@@ -19,7 +19,25 @@ export default function App() {
       const saved = window.localStorage.getItem(PROFILES_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((savedProfile: TeamProfile) => {
+            const defaultProfile = DEFAULT_TEAM_PROFILES.find(
+              (d) => d.id === savedProfile.id
+            );
+            if (
+              defaultProfile &&
+              !savedProfile.customAudioUrl &&
+              defaultProfile.customAudioUrl
+            ) {
+              return {
+                ...savedProfile,
+                customAudioUrl: defaultProfile.customAudioUrl,
+                customTrackName: defaultProfile.customTrackName,
+              };
+            }
+            return savedProfile;
+          });
+        }
       }
     } catch {
       // Ignore storage read errors
