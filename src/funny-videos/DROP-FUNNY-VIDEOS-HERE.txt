@@ -1,0 +1,13 @@
+Drop your Discord funny video clips (.mp4, .webm, .mov, .m4v) into this folder!
+
+How serial numbering works automatically (Zero Code Changes):
+- Name files starting with 01, 02, 03, 04... to set their YouTube-style serial order:
+  - 01.mp4                        -> Serial #01 ("Discord Funny Clip 01")
+  - 01-vc-midnight-chaos.mp4      -> Serial #01 ("Vc Midnight Chaos")
+  - 02-rahat-clutch-fail.mp4      -> Serial #02 ("Rahat Clutch Fail")
+  - 03-server-karaoke-moment.mp4  -> Serial #03 ("Server Karaoke Moment")
+
+Tips:
+- You can add as many numbered clips as you want (01, 02, 03, 04, 05, 06...).
+- Keep each clip lightweight (under 15-25 MB in 720p .mp4) for fast GitHub Pages loading.
+- Audio stays ON in the Funny Clips player so voice chat reactions and memes play clearly.

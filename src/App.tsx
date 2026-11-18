@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AdminPasscodeModal } from './components/AdminPasscodeModal';
+import { FunnyClipsSection } from './components/FunnyClipsSection';
 import { HeroCarousel } from './components/HeroCarousel';
 import { Navbar, NavSection } from './components/Navbar';
 import { ProfileEditorModal } from './components/ProfileEditorModal';
@@ -7,6 +8,7 @@ import { ProfileSpotlight } from './components/ProfileSpotlight';
 import { ServerFooterSection } from './components/ServerFooterSection';
 import { TeamRosterSection } from './components/TeamRosterSection';
 import { DEFAULT_TEAM_PROFILES, TeamProfile } from './data/teamProfiles';
+import { FunnyClip, loadFolderFunnyClips } from './utils/funnyVideoLoader';
 import { profileAudio } from './utils/profileAudio';
 
 const PROFILES_STORAGE_KEY = 'discord_panel_profiles_v1';
@@ -57,6 +59,22 @@ export default function App() {
   const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.7);
+  const [isFunnyClipPlaying, setIsFunnyClipPlaying] = useState(false);
+  const [localFunnyClips, setLocalFunnyClips] = useState<FunnyClip[]>([]);
+
+  const folderFunnyClips = useMemo(() => loadFolderFunnyClips(), []);
+  const funnyClips = useMemo(() => {
+    const bySerial = new Map<number, FunnyClip>();
+    for (const clip of folderFunnyClips) {
+      bySerial.set(clip.serialNumber, clip);
+    }
+    for (const clip of localFunnyClips) {
+      bySerial.set(clip.serialNumber, clip);
+    }
+    return Array.from(bySerial.values()).sort(
+      (a, b) => a.serialNumber - b.serialNumber
+    );
+  }, [folderFunnyClips, localFunnyClips]);
 
   const [starredIds, setStarredIds] = useState<string[]>(() => {
     try {
@@ -145,7 +163,7 @@ export default function App() {
   const handleToggleMute = () => {
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
-    profileAudio.setMuted(nextMuted);
+    profileAudio.setMuted(nextMuted || isFunnyClipPlaying);
   };
 
   const handleChangeVolume = (nextVolume: number) => {
@@ -153,10 +171,37 @@ export default function App() {
     setVolume(clamped);
     if (clamped > 0 && isMuted) {
       setIsMuted(false);
-      profileAudio.setMuted(false);
+      profileAudio.setMuted(isFunnyClipPlaying);
     }
     profileAudio.setVolume(clamped);
   };
+
+  const handleClipPlaybackChange = useCallback(
+    (clipPlaying: boolean) => {
+      setIsFunnyClipPlaying(clipPlaying);
+      profileAudio.setMuted(clipPlaying ? true : isMuted);
+    },
+    [isMuted]
+  );
+
+  const handleAddLocalClip = useCallback((clip: FunnyClip) => {
+    setLocalFunnyClips((prev) => {
+      const filtered = prev.filter(
+        (item) => item.serialNumber !== clip.serialNumber
+      );
+      return [...filtered, clip];
+    });
+  }, []);
+
+  const handleRemoveLocalClip = useCallback((clipId: string) => {
+    setLocalFunnyClips((prev) => {
+      const target = prev.find((item) => item.id === clipId);
+      if (target?.videoUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(target.videoUrl);
+      }
+      return prev.filter((item) => item.id !== clipId);
+    });
+  }, []);
 
   const handleSelectProfile = (index: number, autoPlayMusic = false) => {
     setActiveIndex(index);
@@ -365,7 +410,16 @@ export default function App() {
           onOpenAdminLogin={() => setAdminModalOpen(true)}
           onLockAdmin={handleLockAdmin}
           onExportConfig={handleExportConfig}
-        />
+        >
+          <FunnyClipsSection
+            clips={funnyClips}
+            isAdminMode={isAdminMode}
+            onOpenAdminLogin={() => setAdminModalOpen(true)}
+            onAddLocalClip={handleAddLocalClip}
+            onRemoveLocalClip={handleRemoveLocalClip}
+            onClipPlaybackChange={handleClipPlaybackChange}
+          />
+        </ServerFooterSection>
       </main>
 
       {isAdminMode && (

@@ -131,10 +131,86 @@
   animation: ringedPlanetOrbit 10s ease-in-out infinite;
 }
 
+@keyframes fireFrameSpin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes fireAuraPulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.992);
+  }
+  50% {
+    opacity: 0.96;
+    transform: scale(1.012);
+  }
+}
+
+.fire-frame-aura {
+  background: radial-gradient(
+      70% 60% at 15% 20%,
+      rgba(251, 146, 60, 0.58),
+      transparent 72%
+    ),
+    radial-gradient(
+      70% 65% at 85% 80%,
+      rgba(239, 68, 68, 0.62),
+      transparent 72%
+    ),
+    radial-gradient(
+      60% 55% at 50% 50%,
+      rgba(249, 115, 22, 0.34),
+      transparent 75%
+    );
+  animation: fireAuraPulse 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.fire-frame-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 240%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    from 0deg,
+    rgba(220, 38, 38, 0.68) 0deg,
+    #f97316 32deg,
+    #fde047 64deg,
+    #fb923c 96deg,
+    rgba(239, 68, 68, 0.72) 138deg,
+    #ea580c 175deg,
+    #fef08a 212deg,
+    #f97316 248deg,
+    rgba(220, 38, 38, 0.7) 292deg,
+    #fbbf24 328deg,
+    rgba(220, 38, 38, 0.68) 360deg
+  );
+  animation: fireFrameSpin 3.6s linear infinite;
+  pointer-events: none;
+}
+
+.fire-frame-beam-fast {
+  animation-duration: 2.6s;
+}
+
+.serial-playlist-gradient {
+  background: linear-gradient(180deg, #f3f4f5 0%, #ffe0b5 52%, #ff9408 100%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-cinema-backdrop,
   .animate-planet-spin-slow,
-  .animate-ringed-planet {
+  .animate-ringed-planet,
+  .fire-frame-aura,
+  .fire-frame-beam {
     animation: none;
   }
 }
+

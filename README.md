@@ -52,7 +52,10 @@ You do **not** need to edit any code to change songs or pictures:
 4. **Change Hero Background Videos (Muted, Low-Opacity Loop):**
    - Upload or drag-and-drop `.mp4`, `.webm`, or `.mov` videos into **`src/videos/`**
    - Name them `01.mp4`, `02.mp4`, `03.mp4`, `04.mp4`, `05.mp4` (or `01-name.mp4` / member first name) — they play muted at subtle opacity behind that profile's Hero slide without interfering with theme music!
-5. **Change Names, Handles, Roles, or Bio Text:**
+5. **Upload Discord Funny Clips (YouTube Serial Gallery with Fire Frames):**
+   - Upload or drag-and-drop `.mp4`, `.webm`, `.mov`, or `.m4v` files into **`src/funny-videos/`**
+   - Name them `01.mp4`, `02.mp4`, `03.mp4` (or `01-funny-moment.mp4`) — they appear above the footer in serial order with sound enabled and animated fire lighting outline frames.
+6. **Change Names, Handles, Roles, or Bio Text:**
    - Edit `src/data/teamProfiles.ts`.
 
 Commit or upload directly on GitHub — GitHub Actions automatically builds and updates the live website for all visitors!

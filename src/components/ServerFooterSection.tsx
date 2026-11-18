@@ -1,5 +1,5 @@
 import { CheckCircle2, Download, Lock, Unlock } from 'lucide-react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, ReactNode, useState } from 'react';
 import { SERVER_PILLARS } from '../data/teamProfiles';
 import { NavSection } from './Navbar';
 
@@ -9,6 +9,7 @@ interface ServerFooterSectionProps {
   onOpenAdminLogin: () => void;
   onLockAdmin: () => void;
   onExportConfig: () => void;
+  children?: ReactNode;
 }
 
 export function ServerFooterSection({
@@ -17,6 +18,7 @@ export function ServerFooterSection({
   onOpenAdminLogin,
   onLockAdmin,
   onExportConfig,
+  children,
 }: ServerFooterSectionProps) {
   const [discordTag, setDiscordTag] = useState('');
   const [error, setError] = useState('');
@@ -143,6 +145,8 @@ export function ServerFooterSection({
         </div>
       </section>
 
+      {children}
+
       {/* Quiet Editorial Footer with Protected Owner Access */}
       <footer className="bg-[#070709] border-t border-white/10 py-10">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -176,6 +180,9 @@ export function ServerFooterSection({
             </a>
             <a href="#community" className="hover:text-white transition-colors">
               Community
+            </a>
+            <a href="#funny-clips" className="hover:text-white transition-colors">
+              Funny Clips
             </a>
 
             <span className="text-neutral-600" aria-hidden="true">
