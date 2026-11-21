@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from 'react';
 import { TeamProfile } from '../data/teamProfiles';
 import { BUILT_IN_TRACKS } from '../utils/profileAudio';
+import { DiscordProfileFrame } from './DiscordProfileFrame';
 import { ResilientImage } from './ResilientImage';
 
 interface HeroCarouselProps {
@@ -234,7 +235,7 @@ export function HeroCarousel({
 
               {/* 3D Mirror Coverflow Stage (Taller & Luminous Glass Outline) */}
               <div
-                className="relative h-[440px] sm:h-[520px] flex items-start justify-center pt-2 overflow-hidden"
+                className="relative h-[515px] sm:h-[595px] flex items-start justify-center pt-16 sm:pt-20 overflow-hidden"
                 style={{ perspective: '1400px' }}
               >
                 {/* Glossy Reflective Stage Plane */}
@@ -267,15 +268,26 @@ export function HeroCarousel({
                       }}
                       className="group absolute w-[212px] sm:w-[252px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                     >
-                      {/* Frosted Glass Outline & Specular Rim Frame */}
-                      <div
-                        className={`relative p-[2px] rounded-[22px] transition-all duration-300 ${
-                          isCenter
-                            ? 'bg-gradient-to-br from-white/75 via-white/20 to-white/55 shadow-[0_28px_65px_rgba(0,0,0,0.9)]'
-                            : 'bg-gradient-to-br from-white/40 via-white/10 to-white/30 shadow-[0_18px_40px_rgba(0,0,0,0.75)] hover:from-white/55 hover:to-white/40'
-                        }`}
+                      {/* Frosted Glass Outline OR Discord Animated Frame (01 Skull / 02 Symbiote) */}
+                      <DiscordProfileFrame
+                        variant={
+                          profile.indexLabel === '01'
+                            ? 'skull'
+                            : profile.indexLabel === '02'
+                              ? 'symbiote'
+                              : undefined
+                        }
                       >
-                        <div className="relative aspect-[9/14] w-full rounded-[20px] overflow-hidden bg-[#0A0A0E] ring-1 ring-inset ring-white/20">
+                        <div
+                          className={`relative rounded-[22px] transition-all duration-300 ${
+                            profile.indexLabel === '01' || profile.indexLabel === '02'
+                              ? 'p-0 shadow-[0_28px_65px_rgba(0,0,0,0.92)]'
+                              : isCenter
+                                ? 'p-[2px] bg-gradient-to-br from-white/75 via-white/20 to-white/55 shadow-[0_28px_65px_rgba(0,0,0,0.9)]'
+                                : 'p-[2px] bg-gradient-to-br from-white/40 via-white/10 to-white/30 shadow-[0_18px_40px_rgba(0,0,0,0.75)] hover:from-white/55 hover:to-white/40'
+                          }`}
+                        >
+                          <div className="relative aspect-[9/14] w-full rounded-[20px] overflow-hidden bg-[#0A0A0E] ring-1 ring-inset ring-white/20">
                           <button
                             type="button"
                             onClick={() => {
@@ -337,7 +349,11 @@ export function HeroCarousel({
                                 setExpandedProfile(profile);
                               }}
                               aria-label={`Expand ${profile.name} full preview`}
-                              className="absolute top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-white bg-black/35 hover:bg-black/60 border border-white/30 backdrop-blur-md rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                              className={`absolute left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-white bg-black/45 hover:bg-black/70 border border-white/30 backdrop-blur-md rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                                profile.indexLabel === '01' || profile.indexLabel === '02'
+                                  ? 'top-5'
+                                  : 'top-3'
+                              }`}
                             >
                               <Maximize2 className="w-3 h-3" aria-hidden="true" />
                               <span>Expand</span>
@@ -345,11 +361,12 @@ export function HeroCarousel({
                           )}
                         </div>
                       </div>
+                      </DiscordProfileFrame>
 
                       {/* 3D Mirror Reflection Directly Underneath */}
                       <div
                         aria-hidden="true"
-                        className="relative mt-2 h-[82px] w-full rounded-[20px] overflow-hidden pointer-events-none select-none border border-white/15"
+                        className="relative mt-2 h-[68px] w-full rounded-[20px] overflow-hidden pointer-events-none select-none border border-white/15"
                         style={{
                           transform: 'scaleY(-1)',
                           maskImage:
@@ -473,39 +490,58 @@ export function HeroCarousel({
           aria-modal="true"
           aria-label={`${expandedProfile.name} full profile preview`}
           onClick={() => setExpandedProfile(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-20 sm:p-8 sm:pt-24 bg-black/85 backdrop-blur-md overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-md w-full p-[2px] rounded-[24px] bg-gradient-to-br from-white/70 via-white/20 to-white/50 shadow-2xl"
+            className="relative max-w-md w-full my-auto"
           >
-            <div className="relative aspect-[9/14] w-full rounded-[22px] overflow-hidden bg-[#0A0A0E]">
-              <ResilientImage
-                src={expandedProfile.posterUrl}
-                alt={`${expandedProfile.name} full view`}
-                fallbackTitle={expandedProfile.name}
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => setExpandedProfile(null)}
-                aria-label="Close preview"
-                className="absolute top-3 right-3 inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/55 hover:bg-[#E11D48] text-white border border-white/25 backdrop-blur-md transition-colors cursor-pointer"
+            <DiscordProfileFrame
+              variant={
+                expandedProfile.indexLabel === '01'
+                  ? 'skull'
+                  : expandedProfile.indexLabel === '02'
+                    ? 'symbiote'
+                    : undefined
+              }
+            >
+              <div
+                className={`relative rounded-[24px] shadow-2xl ${
+                  expandedProfile.indexLabel === '01' ||
+                  expandedProfile.indexLabel === '02'
+                    ? 'p-0'
+                    : 'p-[2px] bg-gradient-to-br from-white/70 via-white/20 to-white/50'
+                }`}
               >
-                <X className="w-5 h-5" aria-hidden="true" />
-              </button>
-              <div className="absolute inset-x-0 bottom-0 pt-12 pb-5 px-5 bg-gradient-to-t from-black/90 via-black/45 to-transparent">
-                <p className="font-display text-2xl font-bold text-white">
-                  {expandedProfile.name}
-                </p>
-                <p className="text-xs font-mono text-neutral-300 mt-0.5">
-                  {expandedProfile.discordHandle} · {expandedProfile.roleTitle}
-                </p>
-                <p className="text-sm text-neutral-200 mt-2 leading-relaxed">
-                  {expandedProfile.customText}
-                </p>
+                <div className="relative aspect-[9/14] w-full rounded-[22px] overflow-hidden bg-[#0A0A0E]">
+                  <ResilientImage
+                    src={expandedProfile.posterUrl}
+                    alt={`${expandedProfile.name} full view`}
+                    fallbackTitle={expandedProfile.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setExpandedProfile(null)}
+                    aria-label="Close preview"
+                    className="absolute top-3 right-3 inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/55 hover:bg-[#E11D48] text-white border border-white/25 backdrop-blur-md transition-colors cursor-pointer"
+                  >
+                    <X className="w-5 h-5" aria-hidden="true" />
+                  </button>
+                  <div className="absolute inset-x-0 bottom-0 pt-12 pb-5 px-5 bg-gradient-to-t from-black/90 via-black/45 to-transparent">
+                    <p className="font-display text-2xl font-bold text-white">
+                      {expandedProfile.name}
+                    </p>
+                    <p className="text-xs font-mono text-neutral-300 mt-0.5">
+                      {expandedProfile.discordHandle} · {expandedProfile.roleTitle}
+                    </p>
+                    <p className="text-sm text-neutral-200 mt-2 leading-relaxed">
+                      {expandedProfile.customText}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
+            </DiscordProfileFrame>
           </div>
         </div>
       )}

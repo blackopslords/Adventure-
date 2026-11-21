@@ -1,6 +1,7 @@
 import { Bookmark, Check, Music, PencilLine, Play, Users } from 'lucide-react';
 import { TeamProfile } from '../data/teamProfiles';
 import { NavSection } from './Navbar';
+import { DiscordProfileFrame } from './DiscordProfileFrame';
 import { ResilientImage } from './ResilientImage';
 
 interface TeamRosterSectionProps {
@@ -158,22 +159,35 @@ export function TeamRosterSection({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 pt-8">
             {profiles.map((profile) => {
               const isHeroActive = profile.id === activeProfileId;
               const isStarred = starredIds.includes(profile.id);
+              const frameVariant =
+                profile.indexLabel === '01'
+                  ? 'skull'
+                  : profile.indexLabel === '02'
+                    ? 'symbiote'
+                    : undefined;
 
               return (
                 <article
                   key={profile.id}
-                  className={`group flex flex-col bg-[#111115] rounded-xl overflow-hidden border transition-colors duration-200 ${
+                  className={`group flex flex-col bg-[#111115] rounded-xl border transition-colors duration-200 ${
+                    frameVariant ? 'overflow-visible' : 'overflow-hidden'
+                  } ${
                     isHeroActive
                       ? 'border-[#E11D48]/80'
                       : 'border-white/10 hover:border-white/25'
                   }`}
                 >
-                  {/* Tall 9:14 Profile Poster / Screenshot with Frosted Glass Rim */}
-                  <div className="relative aspect-[9/14] overflow-hidden bg-neutral-900 ring-1 ring-inset ring-white/20">
+                  {/* Tall 9:14 Profile Poster / Screenshot with Discord Animated Frame on 01 & 02 */}
+                  <DiscordProfileFrame variant={frameVariant} compact>
+                    <div
+                      className={`relative aspect-[9/14] overflow-hidden bg-neutral-900 ring-1 ring-inset ring-white/20 ${
+                        frameVariant ? 'rounded-t-xl' : ''
+                      }`}
+                    >
                     <button
                       type="button"
                       onClick={() => {
@@ -214,9 +228,14 @@ export function TeamRosterSection({
                       )}
                     </button>
                   </div>
+                  </DiscordProfileFrame>
 
                   {/* Card Body */}
-                  <div className="p-4 flex flex-col flex-1 justify-between gap-4">
+                  <div
+                    className={`p-4 flex flex-col flex-1 justify-between gap-4 ${
+                      frameVariant ? 'pt-6' : ''
+                    }`}
+                  >
                     <div>
                       <h3 className="font-display text-xl font-semibold tracking-tight text-white leading-snug mb-1">
                         {profile.name}
