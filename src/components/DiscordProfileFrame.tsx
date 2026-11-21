@@ -12,20 +12,19 @@ interface DiscordProfileFrameProps {
 }
 
 const EMBER_SPARK_CLASSES = [
-  'left-[14%] [animation-delay:0s] [animation-duration:2.9s] w-1.5 h-1.5',
-  'left-[28%] [animation-delay:0.7s] [animation-duration:3.4s] w-1 h-1',
-  'left-[46%] [animation-delay:0.2s] [animation-duration:2.5s] w-1.5 h-1.5',
-  'left-[61%] [animation-delay:1.1s] [animation-duration:3.1s] w-1 h-1',
-  'left-[77%] [animation-delay:0.5s] [animation-duration:2.7s] w-1.5 h-1.5',
-  'left-[89%] [animation-delay:1.5s] [animation-duration:3.3s] w-1 h-1',
+  'left-[16%] bottom-1 [animation-delay:0s] [animation-duration:2.8s] w-1 h-1',
+  'left-[31%] bottom-3 [animation-delay:0.8s] [animation-duration:3.3s] w-1.5 h-1.5',
+  'left-[48%] bottom-0 [animation-delay:0.3s] [animation-duration:2.5s] w-1 h-1',
+  'left-[64%] bottom-4 [animation-delay:1.2s] [animation-duration:3.1s] w-1.5 h-1.5',
+  'left-[81%] bottom-1 [animation-delay:0.6s] [animation-duration:2.7s] w-1 h-1',
 ];
 
 const SYMBIOTE_SPORE_CLASSES = [
-  'left-[12%] [animation-delay:0.2s] [animation-duration:3.2s] w-1.5 h-1.5',
-  'left-[30%] [animation-delay:1.1s] [animation-duration:2.8s] w-1 h-1',
-  'left-[49%] [animation-delay:0.4s] [animation-duration:3.5s] w-1.5 h-1.5',
-  'left-[68%] [animation-delay:1.6s] [animation-duration:2.9s] w-1 h-1',
-  'left-[84%] [animation-delay:0.8s] [animation-duration:3.1s] w-1.5 h-1.5',
+  'left-[14%] bottom-1 [animation-delay:0.2s] [animation-duration:3.1s] w-1 h-1',
+  'left-[33%] bottom-3 [animation-delay:1.1s] [animation-duration:2.7s] w-1.5 h-1.5',
+  'left-[52%] bottom-0 [animation-delay:0.5s] [animation-duration:3.4s] w-1 h-1',
+  'left-[71%] bottom-2 [animation-delay:1.5s] [animation-duration:2.9s] w-1 h-1',
+  'left-[86%] bottom-1 [animation-delay:0.9s] [animation-duration:3.0s] w-1.5 h-1.5',
 ];
 
 export function DiscordProfileFrame({
@@ -67,12 +66,12 @@ export function DiscordProfileFrame({
             className="discord-symbiote-img w-full h-full object-fill"
           />
 
-          {/* Subtle Drifting Abyssal Mist Spores */}
-          <div className="absolute inset-x-[8%] top-[2%] h-[24%] overflow-hidden">
+          {/* Subtle Drifting Abyssal Mist Spores Above Top Tendrils */}
+          <div className="absolute inset-x-[10%] top-[-4%] h-[16%] overflow-hidden">
             {SYMBIOTE_SPORE_CLASSES.map((sporeClass, i) => (
               <span
                 key={i}
-                className={`discord-symbiote-spore absolute bottom-0 rounded-full bg-slate-200 shadow-[0_0_8px_rgba(45,212,191,0.8)] ${sporeClass}`}
+                className={`discord-symbiote-spore absolute rounded-full bg-slate-200/90 blur-[0.5px] shadow-[0_0_8px_rgba(45,212,191,0.85)] ${sporeClass}`}
               />
             ))}
           </div>
@@ -115,12 +114,12 @@ export function DiscordProfileFrame({
           <span className="w-full h-full rounded-full bg-gradient-to-r from-transparent via-[#ff3b5c]/80 to-transparent blur-[6px]" />
         </div>
 
-        {/* Rising Ember Sparks Around Top Flames */}
-        <div className="absolute inset-x-[6%] top-[4%] h-[28%] overflow-hidden">
+        {/* Rising Ember Sparks Strictly Above the Top Skulls & Flame Crown */}
+        <div className="absolute inset-x-[10%] top-[-4%] h-[16%] overflow-hidden">
           {EMBER_SPARK_CLASSES.map((sparkClass, i) => (
             <span
               key={i}
-              className={`discord-ember-rise absolute bottom-0 rounded-full bg-[#ff6b81] shadow-[0_0_8px_#ff2e55] ${sparkClass}`}
+              className={`discord-ember-rise absolute rounded-full bg-[#ff6b81]/90 blur-[0.5px] shadow-[0_0_8px_#ff2e55] ${sparkClass}`}
             />
           ))}
         </div>
