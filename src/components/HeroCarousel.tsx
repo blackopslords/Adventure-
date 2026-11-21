@@ -235,7 +235,7 @@ export function HeroCarousel({
 
               {/* 3D Mirror Coverflow Stage (Taller & Luminous Glass Outline) */}
               <div
-                className="relative h-[515px] sm:h-[595px] flex items-start justify-center pt-16 sm:pt-20 overflow-hidden"
+                className="relative h-[530px] sm:h-[615px] flex items-start justify-center pt-[74px] sm:pt-[88px] overflow-hidden"
                 style={{ perspective: '1400px' }}
               >
                 {/* Glossy Reflective Stage Plane */}
@@ -268,19 +268,23 @@ export function HeroCarousel({
                       }}
                       className="group absolute w-[212px] sm:w-[252px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                     >
-                      {/* Frosted Glass Outline OR Discord Animated Frame (01 Skull / 02 Symbiote) */}
+                      {/* Frosted Glass Outline OR Discord Animated Frame (01 Skull / 02 Symbiote / 03 Raven) */}
                       <DiscordProfileFrame
                         variant={
                           profile.indexLabel === '01'
                             ? 'skull'
                             : profile.indexLabel === '02'
                               ? 'symbiote'
-                              : undefined
+                              : profile.indexLabel === '03'
+                                ? 'raven'
+                                : undefined
                         }
                       >
                         <div
                           className={`relative rounded-[22px] transition-all duration-300 ${
-                            profile.indexLabel === '01' || profile.indexLabel === '02'
+                            profile.indexLabel === '01' ||
+                            profile.indexLabel === '02' ||
+                            profile.indexLabel === '03'
                               ? 'p-0 shadow-[0_28px_65px_rgba(0,0,0,0.92)]'
                               : isCenter
                                 ? 'p-[2px] bg-gradient-to-br from-white/75 via-white/20 to-white/55 shadow-[0_28px_65px_rgba(0,0,0,0.9)]'
@@ -350,7 +354,9 @@ export function HeroCarousel({
                               }}
                               aria-label={`Expand ${profile.name} full preview`}
                               className={`absolute left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-white bg-black/45 hover:bg-black/70 border border-white/30 backdrop-blur-md rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
-                                profile.indexLabel === '01' || profile.indexLabel === '02'
+                                profile.indexLabel === '01' ||
+                                profile.indexLabel === '02' ||
+                                profile.indexLabel === '03'
                                   ? 'top-5'
                                   : 'top-3'
                               }`}
@@ -490,7 +496,7 @@ export function HeroCarousel({
           aria-modal="true"
           aria-label={`${expandedProfile.name} full profile preview`}
           onClick={() => setExpandedProfile(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-20 sm:p-8 sm:pt-24 bg-black/85 backdrop-blur-md overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-28 sm:p-8 sm:pt-36 bg-black/85 backdrop-blur-md overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -502,13 +508,16 @@ export function HeroCarousel({
                   ? 'skull'
                   : expandedProfile.indexLabel === '02'
                     ? 'symbiote'
-                    : undefined
+                    : expandedProfile.indexLabel === '03'
+                      ? 'raven'
+                      : undefined
               }
             >
               <div
                 className={`relative rounded-[24px] shadow-2xl ${
                   expandedProfile.indexLabel === '01' ||
-                  expandedProfile.indexLabel === '02'
+                  expandedProfile.indexLabel === '02' ||
+                  expandedProfile.indexLabel === '03'
                     ? 'p-0'
                     : 'p-[2px] bg-gradient-to-br from-white/70 via-white/20 to-white/50'
                 }`}
