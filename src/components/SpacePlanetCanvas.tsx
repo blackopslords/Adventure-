@@ -162,12 +162,15 @@ function hash1D(n: number): number {
 }
 
 // Smoothly blend left/right edges so the 360° globe has zero UV seam while rotating
-function buildSeamlessTextures(img: HTMLImageElement): {
+function buildSeamlessTextures(
+  img: HTMLImageElement,
+  targetWidth = 1440
+): {
   colorTex: THREE.CanvasTexture;
   bumpTex: THREE.CanvasTexture;
 } {
-  const w = 1440;
-  const h = 720;
+  const w = targetWidth;
+  const h = Math.round(targetWidth / 2);
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
@@ -265,8 +268,23 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     SPACE_PLANET_THEMES[profileIndex % SPACE_PLANET_THEMES.length] ??
     SPACE_PLANET_THEMES[0];
 
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const starCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const threeHostRef = useRef<HTMLDivElement | null>(null);
+  const isVisibleRef = useRef<boolean>(true);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        isVisibleRef.current = entries.some((entry) => entry.isIntersecting);
+      },
+      { rootMargin: '180px 0px', threshold: 0.01 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = starCanvasRef.current;
@@ -274,7 +292,9 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const stars = Array.from({ length: 96 }, (_, i) => ({
+    const isMobile = window.innerWidth < 768;
+    const starCount = isMobile ? 48 : 96;
+    const stars = Array.from({ length: starCount }, (_, i) => ({
       x: hash1D(i + 1 + profileIndex * 100),
       y: hash1D(i + 201 + profileIndex * 100),
       r: 0.4 + hash1D(i + 401) * 1.0,
@@ -288,7 +308,7 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
       const parent = canvas.parentElement;
       if (!parent) return;
       const rect = parent.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 2);
       canvas.width = Math.max(1, Math.floor(rect.width * dpr));
       canvas.height = Math.max(1, Math.floor(rect.height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -299,9 +319,16 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     if (canvas.parentElement) ro.observe(canvas.parentElement);
 
     let time = 0;
+    let lastDraw = 0;
     let rafId = 0;
 
-    const renderStars = () => {
+    const renderStars = (now: number) => {
+      rafId = window.requestAnimationFrame(renderStars);
+      if (!isVisibleRef.current) return;
+      // Throttle starfield twinkle on mobile to save main-thread canvas ticks
+      if (isMobile && now - lastDraw < 42) return;
+      lastDraw = now;
+
       const parent = canvas.parentElement;
       const w = parent?.clientWidth ?? 480;
       const h = parent?.clientHeight ?? 380;
@@ -317,8 +344,7 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
         ctx.fill();
       }
 
-      time += 0.016;
-      rafId = window.requestAnimationFrame(renderStars);
+      time += isMobile ? 0.042 : 0.016;
     };
 
     rafId = window.requestAnimationFrame(renderStars);
@@ -334,6 +360,7 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
 
     let disposed = false;
     let rafId = 0;
+    const isMobile = window.innerWidth < 768;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -346,11 +373,13 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !isMobile,
       powerPreference: 'high-performance',
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 2)
+    );
     renderer.setSize(
       Math.max(1, host.clientWidth),
       Math.max(1, host.clientHeight)
@@ -376,7 +405,8 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     planetGroup.rotation.x = theme.hasRings ? 0.34 : 0.1;
     scene.add(planetGroup);
 
-    const sphereGeo = new THREE.SphereGeometry(1, 96, 96);
+    const sphereSegs = isMobile ? 48 : 96;
+    const sphereGeo = new THREE.SphereGeometry(1, sphereSegs, sphereSegs);
     const planetMat = new THREE.MeshStandardMaterial({
       color: '#ffffff',
       roughness: theme.roughness,
@@ -386,7 +416,8 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     const planetMesh = new THREE.Mesh(sphereGeo, planetMat);
     planetGroup.add(planetMesh);
 
-    const atmoGeo = new THREE.SphereGeometry(1.06, 96, 96);
+    const atmoSegs = isMobile ? 36 : 96;
+    const atmoGeo = new THREE.SphereGeometry(1.06, atmoSegs, atmoSegs);
     const atmoMat = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
@@ -460,7 +491,7 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     img.src = theme.textureUrl;
     img.onload = () => {
       if (disposed) return;
-      const built = buildSeamlessTextures(img);
+      const built = buildSeamlessTextures(img, isMobile ? 720 : 1440);
       colorTex = built.colorTex;
       bumpTex = built.bumpTex;
       planetMat.map = colorTex;
@@ -480,11 +511,14 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
     const ro = new ResizeObserver(handleResize);
     ro.observe(host);
 
+    let hasRenderedInitial = false;
     const animate = () => {
       if (disposed) return;
+      rafId = window.requestAnimationFrame(animate);
+      if (!isVisibleRef.current && hasRenderedInitial) return;
+      hasRenderedInitial = true;
       planetMesh.rotation.y += theme.spinSpeed;
       renderer.render(scene, camera);
-      rafId = window.requestAnimationFrame(animate);
     };
     rafId = window.requestAnimationFrame(animate);
 
@@ -509,7 +543,10 @@ export function SpacePlanetCanvas({ profileIndex }: SpacePlanetCanvasProps) {
   }, [theme]);
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between overflow-hidden select-none">
+    <div
+      ref={rootRef}
+      className="relative w-full h-full flex flex-col justify-between overflow-hidden select-none"
+    >
       {/* Twinkling Deep-Space Starfield */}
       <canvas
         ref={starCanvasRef}

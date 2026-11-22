@@ -56,7 +56,7 @@ export function Navbar({
     <header
       className={`fixed top-0 inset-x-0 z-40 transition-colors duration-200 ${
         scrolled || mobileMenuOpen
-          ? 'bg-[#070709]/92 backdrop-blur-md border-b border-white/10'
+          ? 'bg-[#070709]/95 md:bg-[#070709]/92 md:backdrop-blur-md border-b border-white/10'
           : 'bg-gradient-to-b from-[#070709]/85 to-transparent'
       }`}
     >

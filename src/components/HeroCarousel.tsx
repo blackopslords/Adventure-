@@ -9,7 +9,7 @@ import {
   VolumeX,
   X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TeamProfile } from '../data/teamProfiles';
 import { BUILT_IN_TRACKS } from '../utils/profileAudio';
 import { DiscordProfileFrame } from './DiscordProfileFrame';
@@ -47,8 +47,20 @@ export function HeroCarousel({
   isAdminMode,
 }: HeroCarouselProps) {
   const [expandedProfile, setExpandedProfile] = useState<TeamProfile | null>(null);
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const activeProfile = profiles[activeIndex] ?? profiles[0];
   const total = profiles.length;
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobileViewport(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     if (!expandedProfile) return;
@@ -90,10 +102,11 @@ export function HeroCarousel({
       <div className="absolute inset-0 z-0 bg-[#070709]" aria-hidden="true">
         {profiles.map((profile, idx) => {
           const isCurrent = idx === activeIndex;
+          if (isMobileViewport && !isCurrent) return null;
           return (
             <div
               key={profile.id}
-              className={`absolute inset-0 transition-opacity duration-700 ease-out ${
+              className={`absolute inset-0 transition-opacity duration-500 sm:duration-700 ease-out ${
                 isCurrent ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
             >
@@ -101,7 +114,7 @@ export function HeroCarousel({
                 src={profile.backdropUrl}
                 alt={`${profile.name} backdrop`}
                 className={`w-full h-full object-cover object-center ${
-                  isCurrent ? 'animate-cinema-backdrop' : ''
+                  isCurrent && !isMobileViewport ? 'animate-cinema-backdrop' : ''
                 }`}
               />
               {profile.backdropVideoUrl && isCurrent && (
@@ -112,7 +125,7 @@ export function HeroCarousel({
                   loop
                   muted
                   playsInline
-                  preload="auto"
+                  preload={isMobileViewport ? 'metadata' : 'auto'}
                   className="absolute inset-0 w-full h-full object-cover object-center opacity-45"
                 />
               )}
@@ -185,7 +198,7 @@ export function HeroCarousel({
                     .getElementById('roster')
                     ?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="group relative inline-flex items-center p-1.5 pr-6 rounded-full overflow-hidden bg-white/[0.08] hover:bg-white/[0.15] backdrop-blur-xl border border-white/25 hover:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_12px_32px_rgba(0,0,0,0.55)] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="group relative inline-flex items-center p-1.5 pr-6 rounded-full overflow-hidden bg-white/[0.12] md:bg-white/[0.08] hover:bg-white/[0.18] md:backdrop-blur-xl border border-white/25 hover:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_12px_32px_rgba(0,0,0,0.55)] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97] whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <span aria-hidden="true" className="liquid-web3-sheen" />
                 <span className="liquid-orb-ring relative z-10 inline-flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-white/30 via-[#E11D48]/35 to-black/40 border border-white/55 text-white transition-transform duration-200 group-hover:scale-105">
@@ -211,14 +224,17 @@ export function HeroCarousel({
 
           {/* Right Column: Tall 3D Glass-Outline Mirror Profile Slider */}
           <div className="lg:col-span-7">
-            <div className="relative bg-white/[0.03] backdrop-blur-md border border-white/15 rounded-3xl p-4 sm:p-6 shadow-[0_24px_64px_rgba(0,0,0,0.65)] overflow-hidden">
-              <div className="flex items-center justify-end mb-2">
+            <div className="relative bg-[#0c0d12]/72 md:bg-white/[0.03] md:backdrop-blur-md border border-white/15 rounded-3xl p-4 sm:p-6 shadow-[0_24px_64px_rgba(0,0,0,0.65)] overflow-hidden">
+              <div className="flex items-center justify-between sm:justify-end mb-2">
+                <span className="text-[11px] font-mono text-neutral-400 sm:hidden">
+                  Swipe card to switch
+                </span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handlePrev}
                     aria-label="Previous team profile"
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-[#E11D48] text-white border border-white/20 backdrop-blur-md transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/12 hover:bg-[#E11D48] text-white border border-white/20 md:backdrop-blur-md transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                   >
                     <ChevronLeft className="w-5 h-5" aria-hidden="true" />
                   </button>
@@ -226,17 +242,36 @@ export function HeroCarousel({
                     type="button"
                     onClick={handleNext}
                     aria-label="Next team profile"
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-[#E11D48] text-white border border-white/20 backdrop-blur-md transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/12 hover:bg-[#E11D48] text-white border border-white/20 md:backdrop-blur-md transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                   >
                     <ChevronRight className="w-5 h-5" aria-hidden="true" />
                   </button>
                 </div>
               </div>
 
-              {/* 3D Mirror Coverflow Stage (Taller & Luminous Glass Outline) */}
+              {/* 3D Mirror Coverflow Stage (Swipeable on Mobile, GPU-Composited) */}
               <div
-                className="relative h-[530px] sm:h-[615px] flex items-start justify-center pt-[74px] sm:pt-[88px] overflow-hidden"
-                style={{ perspective: '1400px' }}
+                onTouchStart={(e) => {
+                  const t = e.touches[0];
+                  if (t) touchStartRef.current = { x: t.clientX, y: t.clientY };
+                }}
+                onTouchEnd={(e) => {
+                  const start = touchStartRef.current;
+                  touchStartRef.current = null;
+                  const t = e.changedTouches[0];
+                  if (!start || !t) return;
+                  const dx = t.clientX - start.x;
+                  const dy = t.clientY - start.y;
+                  if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+                    if (dx < 0) {
+                      handleNext();
+                    } else {
+                      handlePrev();
+                    }
+                  }
+                }}
+                className="relative h-[530px] sm:h-[615px] flex items-start justify-center pt-[74px] sm:pt-[88px] overflow-hidden touch-pan-y select-none"
+                style={{ perspective: isMobileViewport ? '1000px' : '1400px' }}
               >
                 {/* Glossy Reflective Stage Plane */}
                 <div
@@ -248,28 +283,36 @@ export function HeroCarousel({
                 {profiles.map((profile, idx) => {
                   const offset = getCarouselOffset(idx);
                   const absOffset = Math.abs(offset);
-                  const isCenter = offset === 0;
+                  if (isMobileViewport && absOffset > 1) return null;
 
-                  const translateX = offset * 138;
-                  const translateZ = -absOffset * 90;
-                  const rotateY = offset * -16;
-                  const scale = isCenter ? 1 : absOffset === 1 ? 0.86 : 0.72;
-                  const opacity = isCenter ? 1 : absOffset === 1 ? 0.85 : 0.48;
+                  const isCenter = offset === 0;
+                  const translateX = offset * (isMobileViewport ? 96 : 138);
+                  const translateZ = -absOffset * (isMobileViewport ? 55 : 90);
+                  const rotateY = offset * (isMobileViewport ? -10 : -16);
+                  const scale = isCenter
+                    ? 1
+                    : absOffset === 1
+                      ? isMobileViewport
+                        ? 0.84
+                        : 0.86
+                      : 0.72;
+                  const opacity = isCenter ? 1 : absOffset === 1 ? 0.84 : 0.48;
                   const zIndex = 30 - absOffset * 10;
 
                   return (
                     <div
                       key={profile.id}
                       style={{
-                        transform: `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+                        transform: `translate3d(${translateX}px, 0, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
                         opacity,
                         zIndex,
                         transformStyle: 'preserve-3d',
                       }}
-                      className="group absolute w-[212px] sm:w-[252px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      className="group absolute w-[212px] sm:w-[252px] transition-[transform,opacity] duration-300 sm:duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
                     >
                       {/* Frosted Glass Outline OR Discord Animated Frame (01 Skull / 02 Symbiote / 03 Raven) */}
                       <DiscordProfileFrame
+                        active={isCenter}
                         variant={
                           profile.indexLabel === '01'
                             ? 'skull'
@@ -353,7 +396,7 @@ export function HeroCarousel({
                                 setExpandedProfile(profile);
                               }}
                               aria-label={`Expand ${profile.name} full preview`}
-                              className={`absolute left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-white bg-black/45 hover:bg-black/70 border border-white/30 backdrop-blur-md rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                              className={`absolute left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-white bg-black/60 hover:bg-black/75 border border-white/30 md:backdrop-blur-md rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
                                 profile.indexLabel === '01' ||
                                 profile.indexLabel === '02' ||
                                 profile.indexLabel === '03'
@@ -385,7 +428,7 @@ export function HeroCarousel({
                         <ResilientImage
                           src={profile.posterUrl}
                           alt=""
-                          className="w-full h-[320px] object-cover object-bottom blur-[0.5px]"
+                          className="w-full h-[320px] object-cover object-bottom sm:blur-[0.5px]"
                         />
                       </div>
                     </div>
@@ -496,7 +539,7 @@ export function HeroCarousel({
           aria-modal="true"
           aria-label={`${expandedProfile.name} full profile preview`}
           onClick={() => setExpandedProfile(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-28 sm:p-8 sm:pt-36 bg-black/85 backdrop-blur-md overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-28 sm:p-8 sm:pt-36 bg-black/92 md:bg-black/85 md:backdrop-blur-md overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
