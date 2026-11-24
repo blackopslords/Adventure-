@@ -30,6 +30,7 @@ import type {
 } from '../types/extensions';
 import { parseYouTubeUrl } from '../utils/youtube';
 import { CrystalPlayButton } from './CrystalPlayButton';
+import { VerifiedBadge } from './VerifiedBadge';
 
 interface DownloadExtensionsPageProps {
   combos: ExtensionComboItem[];
@@ -545,8 +546,9 @@ export function DownloadExtensionsPage({
                 <HardDriveDownload className="w-4 h-4" aria-hidden="true" />
                 <span>Public Extension Vault</span>
               </div>
-              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#16143E]">
-                Download Extensions
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#16143E] inline-flex items-center gap-2.5 sm:gap-3.5">
+                <VerifiedBadge className="w-[0.88em] h-[0.88em]" />
+                <span>Download Extensions</span>
               </h1>
               <p className="text-sm sm:text-base text-[#35326B] leading-relaxed">
                 Watch the preview video above each release and install directly

@@ -1,5 +1,6 @@
 import { Menu, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { VerifiedBadge } from './VerifiedBadge';
 
 export type NavSection =
   | 'home'
@@ -105,7 +106,7 @@ export function Navbar({
                 type="button"
                 data-no-music-unlock={item.id !== 'home' ? 'true' : undefined}
                 onClick={() => handleNavClick(item.id)}
-                className={`relative py-1 whitespace-nowrap shrink-0 transition-colors duration-150 focus-visible:outline-none rounded cursor-pointer ${
+                className={`relative py-1 inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors duration-150 focus-visible:outline-none rounded cursor-pointer ${
                   isExtensionsTab
                     ? isActive
                       ? 'text-[#16143E] font-semibold focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
@@ -115,7 +116,10 @@ export function Navbar({
                       : 'text-neutral-300 hover:text-white focus-visible:ring-2 focus-visible:ring-[#E11D48]'
                 }`}
               >
-                {item.label}
+                {item.id === 'extensions' && (
+                  <VerifiedBadge className="w-[1.15em] h-[1.15em]" />
+                )}
+                <span>{item.label}</span>
                 <span
                   aria-hidden="true"
                   className={`absolute left-0 right-0 -bottom-0.5 h-0.5 transition-transform duration-200 origin-left ${
@@ -246,7 +250,7 @@ export function Navbar({
                 type="button"
                 data-no-music-unlock={item.id !== 'home' ? 'true' : undefined}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full text-left px-3 py-3 text-sm font-medium rounded-xl transition-colors cursor-pointer ${
+                className={`w-full text-left px-3 py-3 text-sm font-medium rounded-xl transition-colors cursor-pointer inline-flex items-center gap-2 ${
                   isExtensionsTab
                     ? isActive
                       ? 'ext-glass-cta text-white font-semibold'
@@ -256,7 +260,10 @@ export function Navbar({
                       : 'text-neutral-300 hover:bg-white/5 hover:text-white'
                 }`}
               >
-                {item.label}
+                {item.id === 'extensions' && (
+                  <VerifiedBadge className="w-[1.15em] h-[1.15em]" />
+                )}
+                <span>{item.label}</span>
               </button>
             );
           })}

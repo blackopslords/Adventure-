@@ -2,6 +2,7 @@ import { CheckCircle2, Download, Lock, Unlock } from 'lucide-react';
 import { FormEvent, ReactNode, useState } from 'react';
 import { SERVER_PILLARS } from '../data/teamProfiles';
 import { NavSection } from './Navbar';
+import { VerifiedBadge } from './VerifiedBadge';
 
 interface ServerFooterSectionProps {
   onSelectFilter: (section: NavSection) => void;
@@ -191,9 +192,10 @@ export function ServerFooterSection({
                 onSelectFilter('extensions');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-white transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer"
             >
-              Download Extensions
+              <VerifiedBadge className="w-[1.15em] h-[1.15em]" />
+              <span>Download Extensions</span>
             </button>
 
             <span className="text-neutral-600" aria-hidden="true">
