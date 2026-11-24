@@ -184,6 +184,16 @@ export function ServerFooterSection({
             <a href="#funny-clips" className="hover:text-white transition-colors">
               Funny Clips
             </a>
+            <button
+              type="button"
+              onClick={() => {
+                onSelectFilter('extensions');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Download Extensions
+            </button>
 
             <span className="text-neutral-600" aria-hidden="true">
               ·

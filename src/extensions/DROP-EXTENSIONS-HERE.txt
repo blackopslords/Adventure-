@@ -1,0 +1,12 @@
+Upload or push ANY public download files inside this folder (`src/extensions/`):
+
+Supported examples (any extension works):
+- Software / Installers: `.exe`, `.msi`, `.apk`, `.dmg`, `.bat`, `.crx`
+- Archives: `.zip`, `.rar`, `.7z`
+- Videos: `.mp4`, `.mov`, `.webm`, `.mkv`
+- Audio: `.mp3`, `.wav`, `.ogg`, `.m4a`
+- Images: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`
+- Documents: `.pdf`, `.txt`, `.json`
+
+Once you push files here to GitHub, they will automatically appear ONLY on the
+"Download Extensions" page for public visitors to download directly with their exact filename.

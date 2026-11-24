@@ -1,7 +1,13 @@
 import { Menu, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-export type NavSection = 'home' | 'founders' | 'admins' | 'moderators' | 'starred';
+export type NavSection =
+  | 'home'
+  | 'founders'
+  | 'admins'
+  | 'moderators'
+  | 'starred'
+  | 'extensions';
 
 interface NavbarProps {
   activeFilter: NavSection;
@@ -15,7 +21,7 @@ const NAV_ITEMS: { id: NavSection; label: string }[] = [
   { id: 'founders', label: 'Founders' },
   { id: 'admins', label: 'Admins' },
   { id: 'moderators', label: 'Moderators' },
-  { id: 'starred', label: 'Favorites' },
+  { id: 'extensions', label: 'Download Extensions' },
 ];
 
 export function Navbar({
@@ -42,10 +48,15 @@ export function Navbar({
   }, [searchOpen]);
 
   const handleNavClick = (section: NavSection) => {
+    const wasOnExtensions = activeFilter === 'extensions';
     onSelectFilter(section);
     setMobileMenuOpen(false);
-    if (section === 'home') {
+    if (section === 'home' || section === 'extensions') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (wasOnExtensions) {
+      window.setTimeout(() => {
+        document.getElementById('roster')?.scrollIntoView({ behavior: 'smooth' });
+      }, 60);
     } else {
       const target = document.getElementById('roster');
       target?.scrollIntoView({ behavior: 'smooth' });
@@ -147,13 +158,21 @@ export function Navbar({
               value={searchQuery}
               onChange={(e) => {
                 onSearchChange(e.target.value);
-                if (e.target.value.trim()) {
+                if (activeFilter !== 'extensions' && e.target.value.trim()) {
                   const target = document.getElementById('roster');
                   target?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              placeholder="Search panel members, Discord @handles, roles, or notes..."
-              aria-label="Search panel members"
+              placeholder={
+                activeFilter === 'extensions'
+                  ? 'Search Download Extensions (.exe, .mp4, .mp3, .jpg)...'
+                  : 'Search panel members, Discord @handles, roles, or notes...'
+              }
+              aria-label={
+                activeFilter === 'extensions'
+                  ? 'Search extension files'
+                  : 'Search panel members'
+              }
               className="w-full bg-transparent text-sm md:text-base text-white placeholder:text-neutral-500 focus:outline-none"
             />
             {searchQuery && (

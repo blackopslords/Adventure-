@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import bundledExtensions from 'virtual:download-extensions';
 import { AdminPasscodeModal } from './components/AdminPasscodeModal';
+import { DownloadExtensionsPage } from './components/DownloadExtensionsPage';
 import { FunnyClipsSection } from './components/FunnyClipsSection';
 import { HeroCarousel } from './components/HeroCarousel';
 import { Navbar, NavSection } from './components/Navbar';
@@ -10,6 +12,7 @@ import { TeamRosterSection } from './components/TeamRosterSection';
 import { DEFAULT_TEAM_PROFILES, TeamProfile } from './data/teamProfiles';
 import { FunnyClip, loadFolderFunnyClips } from './utils/funnyVideoLoader';
 import { profileAudio } from './utils/profileAudio';
+import type { ExtensionFileItem } from './types/extensions';
 
 const PROFILES_STORAGE_KEY = 'discord_panel_profiles_v1';
 const DEFAULTS_SIG_KEY = 'discord_panel_defaults_sig_v1';
@@ -53,14 +56,31 @@ export default function App() {
 
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeFilter, setActiveFilter] = useState<NavSection>('home');
+  const [activeFilter, setActiveFilter] = useState<NavSection>(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.location.hash === '#download-extensions'
+    ) {
+      return 'extensions';
+    }
+    return 'home';
+  });
   const [searchQuery, setSearchQuery] = useState('');
+  const [extensionSearchQuery, setExtensionSearchQuery] = useState('');
   const [editingProfile, setEditingProfile] = useState<TeamProfile | null>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [isFunnyClipPlaying, setIsFunnyClipPlaying] = useState(false);
   const [localFunnyClips, setLocalFunnyClips] = useState<FunnyClip[]>([]);
+  const [localExtensionFiles, setLocalExtensionFiles] = useState<
+    ExtensionFileItem[]
+  >([]);
+
+  const extensionFiles = useMemo(() => {
+    const merged = [...bundledExtensions, ...localExtensionFiles];
+    return merged.sort((a, b) => a.fileName.localeCompare(b.fileName));
+  }, [localExtensionFiles]);
 
   const folderFunnyClips = useMemo(() => loadFolderFunnyClips(), []);
   const funnyClips = useMemo(() => {
@@ -201,6 +221,45 @@ export default function App() {
       }
       return prev.filter((item) => item.id !== clipId);
     });
+  }, []);
+
+  const handleAddLocalExtensionFile = useCallback((file: ExtensionFileItem) => {
+    setLocalExtensionFiles((prev) => [...prev, file]);
+  }, []);
+
+  const handleRemoveLocalExtensionFile = useCallback((fileId: string) => {
+    setLocalExtensionFiles((prev) => {
+      const target = prev.find((item) => item.id === fileId);
+      if (target?.downloadUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(target.downloadUrl);
+      }
+      return prev.filter((item) => item.id !== fileId);
+    });
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      if (window.location.hash === '#download-extensions') {
+        setActiveFilter('extensions');
+      } else if (activeFilter === 'extensions') {
+        setActiveFilter('home');
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [activeFilter]);
+
+  const handleSelectNavFilter = useCallback((section: NavSection) => {
+    setActiveFilter(section);
+    if (typeof window !== 'undefined') {
+      if (section === 'extensions') {
+        if (window.location.hash !== '#download-extensions') {
+          window.history.replaceState(null, '', '#download-extensions');
+        }
+      } else if (window.location.hash === '#download-extensions') {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    }
   }, []);
 
   const handleSelectProfile = (index: number, autoPlayMusic = false) => {
@@ -346,80 +405,101 @@ export default function App() {
     });
   }, [profiles, activeFilter, searchQuery, starredIds]);
 
+  const isExtensionsPage = activeFilter === 'extensions';
+
   return (
     <div className="min-h-screen bg-[#070709] text-neutral-100">
       <Navbar
         activeFilter={activeFilter}
-        onSelectFilter={setActiveFilter}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSelectFilter={handleSelectNavFilter}
+        searchQuery={isExtensionsPage ? extensionSearchQuery : searchQuery}
+        onSearchChange={
+          isExtensionsPage ? setExtensionSearchQuery : setSearchQuery
+        }
       />
 
       <main>
-        <HeroCarousel
-          profiles={profiles}
-          activeIndex={activeIndex}
-          onSelectProfile={handleSelectProfile}
-          onOpenEditor={(profile) => {
-            if (isAdminMode) setEditingProfile(profile);
-          }}
-          starredIds={starredIds}
-          onToggleStar={handleToggleStar}
-          isMusicPlaying={isMusicPlaying}
-          onToggleMusic={handleToggleMusic}
-          isMuted={isMuted}
-          onToggleMute={handleToggleMute}
-          volume={volume}
-          onChangeVolume={handleChangeVolume}
-          isAdminMode={isAdminMode}
-        />
-
-        <TeamRosterSection
-          profiles={filteredProfiles}
-          allProfiles={profiles}
-          activeFilter={activeFilter}
-          onSelectFilter={setActiveFilter}
-          searchQuery={searchQuery}
-          onClearSearch={() => setSearchQuery('')}
-          activeProfileId={activeProfile.id}
-          onActivateProfile={handleActivateById}
-          onOpenEditor={(profile) => {
-            if (isAdminMode) setEditingProfile(profile);
-          }}
-          starredIds={starredIds}
-          onToggleStar={handleToggleStar}
-          isAdminMode={isAdminMode}
-        />
-
-        <ProfileSpotlight
-          profile={activeProfile}
-          allProfiles={profiles}
-          onActivateProfile={handleActivateById}
-          isMusicPlaying={isMusicPlaying}
-          onToggleMusic={handleToggleMusic}
-          onSaveQuickText={handleSaveQuickText}
-          onOpenEditor={(profile) => {
-            if (isAdminMode) setEditingProfile(profile);
-          }}
-          isAdminMode={isAdminMode}
-        />
-
-        <ServerFooterSection
-          onSelectFilter={setActiveFilter}
-          isAdminMode={isAdminMode}
-          onOpenAdminLogin={() => setAdminModalOpen(true)}
-          onLockAdmin={handleLockAdmin}
-          onExportConfig={handleExportConfig}
-        >
-          <FunnyClipsSection
-            clips={funnyClips}
+        {isExtensionsPage ? (
+          <DownloadExtensionsPage
+            files={extensionFiles}
+            searchQuery={extensionSearchQuery}
+            onSearchChange={setExtensionSearchQuery}
+            onBackHome={() => {
+              handleSelectNavFilter('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             isAdminMode={isAdminMode}
-            onOpenAdminLogin={() => setAdminModalOpen(true)}
-            onAddLocalClip={handleAddLocalClip}
-            onRemoveLocalClip={handleRemoveLocalClip}
-            onClipPlaybackChange={handleClipPlaybackChange}
+            onAddLocalFile={handleAddLocalExtensionFile}
+            onRemoveLocalFile={handleRemoveLocalExtensionFile}
           />
-        </ServerFooterSection>
+        ) : (
+          <>
+            <HeroCarousel
+              profiles={profiles}
+              activeIndex={activeIndex}
+              onSelectProfile={handleSelectProfile}
+              onOpenEditor={(profile) => {
+                if (isAdminMode) setEditingProfile(profile);
+              }}
+              starredIds={starredIds}
+              onToggleStar={handleToggleStar}
+              isMusicPlaying={isMusicPlaying}
+              onToggleMusic={handleToggleMusic}
+              isMuted={isMuted}
+              onToggleMute={handleToggleMute}
+              volume={volume}
+              onChangeVolume={handleChangeVolume}
+              isAdminMode={isAdminMode}
+            />
+
+            <TeamRosterSection
+              profiles={filteredProfiles}
+              allProfiles={profiles}
+              activeFilter={activeFilter}
+              onSelectFilter={handleSelectNavFilter}
+              searchQuery={searchQuery}
+              onClearSearch={() => setSearchQuery('')}
+              activeProfileId={activeProfile.id}
+              onActivateProfile={handleActivateById}
+              onOpenEditor={(profile) => {
+                if (isAdminMode) setEditingProfile(profile);
+              }}
+              starredIds={starredIds}
+              onToggleStar={handleToggleStar}
+              isAdminMode={isAdminMode}
+            />
+
+            <ProfileSpotlight
+              profile={activeProfile}
+              allProfiles={profiles}
+              onActivateProfile={handleActivateById}
+              isMusicPlaying={isMusicPlaying}
+              onToggleMusic={handleToggleMusic}
+              onSaveQuickText={handleSaveQuickText}
+              onOpenEditor={(profile) => {
+                if (isAdminMode) setEditingProfile(profile);
+              }}
+              isAdminMode={isAdminMode}
+            />
+
+            <ServerFooterSection
+              onSelectFilter={handleSelectNavFilter}
+              isAdminMode={isAdminMode}
+              onOpenAdminLogin={() => setAdminModalOpen(true)}
+              onLockAdmin={handleLockAdmin}
+              onExportConfig={handleExportConfig}
+            >
+              <FunnyClipsSection
+                clips={funnyClips}
+                isAdminMode={isAdminMode}
+                onOpenAdminLogin={() => setAdminModalOpen(true)}
+                onAddLocalClip={handleAddLocalClip}
+                onRemoveLocalClip={handleRemoveLocalClip}
+                onClipPlaybackChange={handleClipPlaybackChange}
+              />
+            </ServerFooterSection>
+          </>
+        )}
       </main>
 
       {isAdminMode && (
