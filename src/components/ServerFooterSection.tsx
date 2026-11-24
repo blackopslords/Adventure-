@@ -1,5 +1,6 @@
 import { CheckCircle2, Download, Lock, Unlock } from 'lucide-react';
 import { FormEvent, ReactNode, useState } from 'react';
+import adventureFamilyLogo from '../assets/brand/adventure-family-logo.png';
 import { SERVER_PILLARS } from '../data/teamProfiles';
 import { NavSection } from './Navbar';
 import { VerifiedBadge } from './VerifiedBadge';
@@ -151,7 +152,7 @@ export function ServerFooterSection({
       {/* Quiet Editorial Footer with Protected Owner Access */}
       <footer className="bg-[#070709] border-t border-white/10 py-10">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
             <a
               href="#top"
               onClick={(e) => {
@@ -159,9 +160,15 @@ export function ServerFooterSection({
                 onSelectFilter('home');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="font-display text-xl font-bold text-white"
+              aria-label="Adventure Family home"
+              className="inline-flex items-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48] rounded"
             >
-              PanelHub
+              <img
+                src={adventureFamilyLogo}
+                alt="Adventure Family"
+                draggable={false}
+                className="h-12 sm:h-14 w-auto object-contain select-none drop-shadow-[0_2px_10px_rgba(225,29,72,0.25)]"
+              />
             </a>
             <span className="text-xs text-neutral-500">
               Discord Server Panel Showcase

@@ -577,64 +577,46 @@
     0 10px 26px rgba(22, 20, 62, 0.36);
 }
 
-/* Animated Lighting Effect for Verified Badge (GPU-compositor only) */
+/* Subtle Animated Lighting Effect for Verified Badge (GPU-compositor only) */
 @keyframes verifiedLightingPulse {
   0%,
   100% {
-    opacity: 0.48;
-    transform: scale3d(0.92, 0.92, 1);
+    opacity: 0.14;
+    transform: scale3d(0.97, 0.97, 1);
   }
   50% {
-    opacity: 0.96;
-    transform: scale3d(1.14, 1.14, 1);
+    opacity: 0.34;
+    transform: scale3d(1.03, 1.03, 1);
   }
 }
 
 @keyframes verifiedLightSweep {
   0% {
-    transform: translate3d(-170%, 0, 0) skewX(-24deg);
+    transform: translate3d(-10px, 0, 0);
   }
   42%,
   100% {
-    transform: translate3d(260%, 0, 0) skewX(-24deg);
+    transform: translate3d(88px, 0, 0);
   }
 }
 
 .verified-badge-aura {
   background: radial-gradient(
     circle,
-    rgba(34, 197, 94, 0.72) 0%,
-    rgba(16, 185, 129, 0.36) 45%,
+    rgba(34, 197, 94, 0.24) 0%,
+    rgba(16, 185, 129, 0.1) 48%,
     transparent 74%
   );
-  animation: verifiedLightingPulse 2.4s ease-in-out infinite;
+  animation: verifiedLightingPulse 2.8s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
-.verified-badge-img {
-  filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.55));
-}
-
-.verified-badge-mask {
-  -webkit-mask-image: url('/assets/aistudio/icons8-verified-account-48_a6fd8a00.png');
-  mask-image: url('/assets/aistudio/icons8-verified-account-48_a6fd8a00.png');
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
+.verified-badge-svg {
+  filter: drop-shadow(0 0 1.5px rgba(22, 163, 74, 0.2));
 }
 
 .verified-badge-sweep {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.78),
-    rgba(187, 247, 208, 0.55),
-    transparent
-  );
-  animation: verifiedLightSweep 3s ease-in-out infinite;
+  animation: verifiedLightSweep 3.4s ease-in-out infinite;
   will-change: transform;
 }
 

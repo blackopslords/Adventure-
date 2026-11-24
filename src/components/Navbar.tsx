@@ -1,5 +1,6 @@
 import { Menu, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import adventureFamilyLogo from '../assets/brand/adventure-family-logo.png';
 import { VerifiedBadge } from './VerifiedBadge';
 
 export type NavSection =
@@ -77,20 +78,30 @@ export function Navbar({
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between gap-8">
-        {/* Zone 1: Single text element wordmark */}
+        {/* Zone 1: Brand wordmark logo */}
         <a
           href="#top"
           onClick={(e) => {
             e.preventDefault();
             handleNavClick('home');
           }}
-          className={`font-display text-2xl md:text-3xl font-bold tracking-tight whitespace-nowrap shrink-0 focus-visible:outline-none rounded ${
+          aria-label="Adventure Family home"
+          className={`inline-flex items-center shrink-0 focus-visible:outline-none rounded ${
             isExtensionsTab
-              ? 'text-[#16143E] focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
-              : 'text-white focus-visible:ring-2 focus-visible:ring-[#E11D48]'
+              ? 'focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
+              : 'focus-visible:ring-2 focus-visible:ring-[#E11D48]'
           }`}
         >
-          PanelHub
+          <img
+            src={adventureFamilyLogo}
+            alt="Adventure Family"
+            draggable={false}
+            className={`h-12 md:h-[58px] w-auto object-contain select-none transition-transform duration-200 hover:scale-[1.03] ${
+              isExtensionsTab
+                ? 'drop-shadow-[0_2px_8px_rgba(22,20,62,0.28)]'
+                : 'drop-shadow-[0_2px_10px_rgba(225,29,72,0.28)]'
+            }`}
+          />
         </a>
 
         {/* Zone 2: 5 concise single-line navigation links */}
