@@ -60,17 +60,25 @@ export const BUILT_IN_TRACKS: BuiltInTrack[] = [
   },
 ];
 
+const MAX_PLAYS_PER_SELECTION = 2;
+
 class ProfileAudioEngine {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private loopTimer: number | null = null;
   private htmlAudio: HTMLAudioElement | null = null;
   private stepIndex = 0;
+  private completedPlays = 0;
   private volume = 0.7;
   private muted = false;
   private activeTrackId: BuiltInTrackId = 'abyss-synth';
   private activeCustomUrl: string | undefined = undefined;
   private isWantingPlay = false;
+  private onAutoEnded: (() => void) | null = null;
+
+  public setOnAutoEnded(callback: (() => void) | null) {
+    this.onAutoEnded = callback;
+  }
 
   private ensureContext() {
     if (!this.ctx) {
@@ -125,6 +133,7 @@ class ProfileAudioEngine {
 
   public stop() {
     this.isWantingPlay = false;
+    this.completedPlays = 0;
     if (this.loopTimer !== null) {
       window.clearInterval(this.loopTimer);
       this.loopTimer = null;
@@ -139,13 +148,27 @@ class ProfileAudioEngine {
   public play(trackId: BuiltInTrackId, customAudioUrl?: string) {
     this.stop();
     this.isWantingPlay = true;
+    this.completedPlays = 0;
     this.activeTrackId = trackId;
     this.activeCustomUrl = customAudioUrl;
 
     if (customAudioUrl) {
       const audio = new Audio(customAudioUrl);
-      audio.loop = true;
+      audio.loop = false;
       audio.volume = this.muted ? 0 : this.volume;
+
+      audio.addEventListener('ended', () => {
+        if (this.htmlAudio !== audio || !this.isWantingPlay) return;
+        this.completedPlays += 1;
+        if (this.completedPlays < MAX_PLAYS_PER_SELECTION) {
+          audio.currentTime = 0;
+          void audio.play().catch(() => {});
+        } else {
+          this.stop();
+          this.onAutoEnded?.();
+        }
+      });
+
       this.htmlAudio = audio;
       void audio.play().catch(() => {
         // Browser may block autoplay until first click/touch; unlockFromGesture() resumes it
@@ -161,9 +184,16 @@ class ProfileAudioEngine {
     const track =
       BUILT_IN_TRACKS.find((t) => t.id === trackId) ?? BUILT_IN_TRACKS[0];
     this.stepIndex = 0;
+    const maxSteps = track.frequencies.length * MAX_PLAYS_PER_SELECTION;
 
     const triggerNote = () => {
-      if (!this.ctx || !this.masterGain) return;
+      if (!this.ctx || !this.masterGain || !this.isWantingPlay) return;
+      if (this.stepIndex >= maxSteps) {
+        this.stop();
+        this.onAutoEnded?.();
+        return;
+      }
+
       const now = this.ctx.currentTime;
       const freq = track.frequencies[this.stepIndex % track.frequencies.length];
       this.stepIndex += 1;

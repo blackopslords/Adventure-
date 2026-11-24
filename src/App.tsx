@@ -71,11 +71,13 @@ export default function App() {
   const [extensionSearchQuery, setExtensionSearchQuery] = useState('');
   const [editingProfile, setEditingProfile] = useState<TeamProfile | null>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState<boolean>(() => {
-    if (
-      typeof window !== 'undefined' &&
-      window.location.hash === '#download-extensions'
-    ) {
-      return false;
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === '#download-extensions') {
+        return false;
+      }
+      if (new URLSearchParams(window.location.search).has('clip')) {
+        return false;
+      }
     }
     return true;
   });
@@ -175,12 +177,13 @@ export default function App() {
     }
   }, [starredIds]);
 
+  const manualPlayHandledRef = useRef(false);
+
   useEffect(() => {
     profileAudio.setVolume(0.7);
-    const firstProfile = profiles[0];
-    if (firstProfile && isMusicPlayingRef.current) {
-      profileAudio.play(firstProfile.trackId, firstProfile.customAudioUrl);
-    }
+    profileAudio.setOnAutoEnded(() => {
+      setIsMusicPlaying(false);
+    });
 
     const handleFirstGesture = (e: Event) => {
       const target = e.target as HTMLElement | null;
@@ -199,6 +202,7 @@ export default function App() {
       window.removeEventListener('pointerdown', handleFirstGesture);
       window.removeEventListener('keydown', handleFirstGesture);
       window.removeEventListener('touchstart', handleFirstGesture);
+      profileAudio.setOnAutoEnded(null);
       profileAudio.stop();
     };
   }, []);
@@ -207,8 +211,13 @@ export default function App() {
 
   useEffect(() => {
     if (isMusicPlaying && activeProfile) {
+      if (manualPlayHandledRef.current) {
+        manualPlayHandledRef.current = false;
+        return;
+      }
       profileAudio.play(activeProfile.trackId, activeProfile.customAudioUrl);
     } else {
+      manualPlayHandledRef.current = false;
       profileAudio.stop();
     }
   }, [
@@ -220,9 +229,11 @@ export default function App() {
 
   const handleToggleMusic = () => {
     if (isMusicPlaying) {
+      manualPlayHandledRef.current = false;
       profileAudio.stop();
       setIsMusicPlaying(false);
     } else {
+      manualPlayHandledRef.current = true;
       profileAudio.play(activeProfile.trackId, activeProfile.customAudioUrl);
       setIsMusicPlaying(true);
     }
@@ -327,16 +338,24 @@ export default function App() {
     }
   }, []);
 
-  const handleSelectProfile = (index: number, autoPlayMusic = false) => {
-    setActiveIndex(index);
-    if (autoPlayMusic) {
+  const handleSelectProfile = useCallback(
+    (index: number, autoPlayMusic = false) => {
       const target = profiles[index];
-      if (target) {
-        setIsMusicPlaying(true);
+      const isDifferentProfile = index !== activeIndex;
+      setActiveIndex(index);
+
+      if (
+        autoPlayMusic &&
+        target &&
+        (isDifferentProfile || !isMusicPlayingRef.current)
+      ) {
+        manualPlayHandledRef.current = true;
         profileAudio.play(target.trackId, target.customAudioUrl);
+        setIsMusicPlaying(true);
       }
-    }
-  };
+    },
+    [profiles, activeIndex]
+  );
 
   const handleActivateById = (profileId: string, playMusic = false) => {
     const idx = profiles.findIndex((p) => p.id === profileId);
@@ -438,14 +457,25 @@ export default function App() {
         return;
       }
       if (e.key === 'ArrowRight') {
-        setActiveIndex((prev) => (prev + 1) % profiles.length);
+        handleSelectProfile((activeIndex + 1) % profiles.length, true);
       } else if (e.key === 'ArrowLeft') {
-        setActiveIndex((prev) => (prev - 1 + profiles.length) % profiles.length);
+        handleSelectProfile(
+          (activeIndex - 1 + profiles.length) % profiles.length,
+          true
+        );
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [activeFilter, editingProfile, adminModalOpen, isAdminMode, profiles.length]);
+  }, [
+    activeFilter,
+    editingProfile,
+    adminModalOpen,
+    isAdminMode,
+    profiles.length,
+    activeIndex,
+    handleSelectProfile,
+  ]);
 
   const filteredProfiles = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
