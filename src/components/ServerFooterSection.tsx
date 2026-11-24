@@ -186,6 +186,7 @@ export function ServerFooterSection({
             </a>
             <button
               type="button"
+              data-no-music-unlock="true"
               onClick={() => {
                 onSelectFilter('extensions');
                 window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -55,9 +55,10 @@ You do **not** need to edit any code to change songs or pictures:
 5. **Upload Discord Funny Clips (YouTube Serial Gallery with Fire Frames):**
    - Upload or drag-and-drop `.mp4`, `.webm`, `.mov`, or `.m4v` files into **`src/funny-videos/`**
    - Name them `01.mp4`, `02.mp4`, `03.mp4` (or `01-funny-moment.mp4`) — they appear above the footer in serial order with sound enabled and animated fire lighting outline frames.
-6. **Upload Public Files for Download Extensions (`.exe`, `.jpg`, `.mp4`, `.mp3`, `.zip`, etc.):**
-   - Upload or push ANY file inside **`src/extensions/`** on GitHub.
-   - All files in `src/extensions/` appear **only** on the **Download Extensions** page for public visitors to download directly with their exact original filename.
+6. **Upload Public Files or YouTube + Download Combos for Download Extensions:**
+   - **Direct Files (`.exe`, `.jpg`, `.mp4`, `.mp3`, `.zip`, etc.):** Upload or push ANY file inside **`src/extensions/`** on GitHub.
+   - **YouTube Thumbnail + Download Link / File Combos:** Add your YouTube URL and download link (e.g. Chrome Web Store, Drive, or filename in `src/extensions/`) inside **`src/data/extensionCombos.ts`**!
+   - All of these appear **only** on the **Download Extensions** page for public visitors.
 7. **Change Names, Handles, Roles, or Bio Text:**
    - Edit `src/data/teamProfiles.ts`.
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import bundledExtensions from 'virtual:download-extensions';
 import { AdminPasscodeModal } from './components/AdminPasscodeModal';
 import { DownloadExtensionsPage } from './components/DownloadExtensionsPage';
@@ -10,14 +10,16 @@ import { ProfileSpotlight } from './components/ProfileSpotlight';
 import { ServerFooterSection } from './components/ServerFooterSection';
 import { TeamRosterSection } from './components/TeamRosterSection';
 import { DEFAULT_TEAM_PROFILES, TeamProfile } from './data/teamProfiles';
+import { EXTENSION_COMBOS } from './data/extensionCombos';
 import { FunnyClip, loadFolderFunnyClips } from './utils/funnyVideoLoader';
 import { profileAudio } from './utils/profileAudio';
-import type { ExtensionFileItem } from './types/extensions';
+import type { ExtensionComboItem, ExtensionFileItem } from './types/extensions';
 
 const PROFILES_STORAGE_KEY = 'discord_panel_profiles_v1';
 const DEFAULTS_SIG_KEY = 'discord_panel_defaults_sig_v1';
 const STARRED_STORAGE_KEY = 'discord_panel_starred_v1';
 const ADMIN_SESSION_KEY = 'discord_panel_owner_unlocked';
+const LOCAL_COMBOS_KEY = 'discord_panel_extension_combos_v1';
 
 const CURRENT_DEFAULTS_SIG = JSON.stringify(DEFAULT_TEAM_PROFILES);
 
@@ -68,7 +70,17 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [extensionSearchQuery, setExtensionSearchQuery] = useState('');
   const [editingProfile, setEditingProfile] = useState<TeamProfile | null>(null);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState<boolean>(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.location.hash === '#download-extensions'
+    ) {
+      return false;
+    }
+    return true;
+  });
+  const isMusicPlayingRef = useRef(isMusicPlaying);
+  isMusicPlayingRef.current = isMusicPlaying;
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [isFunnyClipPlaying, setIsFunnyClipPlaying] = useState(false);
@@ -76,6 +88,35 @@ export default function App() {
   const [localExtensionFiles, setLocalExtensionFiles] = useState<
     ExtensionFileItem[]
   >([]);
+  const [localExtensionCombos, setLocalExtensionCombos] = useState<
+    ExtensionComboItem[]
+  >(() => {
+    try {
+      const saved = window.localStorage.getItem(LOCAL_COMBOS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {
+      // Ignore storage errors
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        LOCAL_COMBOS_KEY,
+        JSON.stringify(localExtensionCombos)
+      );
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [localExtensionCombos]);
+
+  const extensionCombos = useMemo(() => {
+    return [...EXTENSION_COMBOS, ...localExtensionCombos];
+  }, [localExtensionCombos]);
 
   const extensionFiles = useMemo(() => {
     const merged = [...bundledExtensions, ...localExtensionFiles];
@@ -137,11 +178,16 @@ export default function App() {
   useEffect(() => {
     profileAudio.setVolume(0.7);
     const firstProfile = profiles[0];
-    if (firstProfile) {
+    if (firstProfile && isMusicPlayingRef.current) {
       profileAudio.play(firstProfile.trackId, firstProfile.customAudioUrl);
     }
 
-    const handleFirstGesture = () => {
+    const handleFirstGesture = (e: Event) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('[data-no-music-unlock="true"]')) {
+        return;
+      }
+      if (!isMusicPlayingRef.current) return;
       profileAudio.unlockFromGesture();
     };
 
@@ -162,6 +208,8 @@ export default function App() {
   useEffect(() => {
     if (isMusicPlaying && activeProfile) {
       profileAudio.play(activeProfile.trackId, activeProfile.customAudioUrl);
+    } else {
+      profileAudio.stop();
     }
   }, [
     isMusicPlaying,
@@ -237,12 +285,23 @@ export default function App() {
     });
   }, []);
 
+  const handleAddExtensionCombo = useCallback((combo: ExtensionComboItem) => {
+    setLocalExtensionCombos((prev) => [...prev, combo]);
+  }, []);
+
+  const handleRemoveExtensionCombo = useCallback((comboId: string) => {
+    setLocalExtensionCombos((prev) => prev.filter((c) => c.id !== comboId));
+  }, []);
+
   useEffect(() => {
     const onHashChange = () => {
       if (window.location.hash === '#download-extensions') {
         setActiveFilter('extensions');
+        setIsMusicPlaying(false);
+        profileAudio.stop();
       } else if (activeFilter === 'extensions') {
         setActiveFilter('home');
+        setIsMusicPlaying(true);
       }
     };
     window.addEventListener('hashchange', onHashChange);
@@ -251,6 +310,12 @@ export default function App() {
 
   const handleSelectNavFilter = useCallback((section: NavSection) => {
     setActiveFilter(section);
+    if (section === 'home') {
+      setIsMusicPlaying(true);
+    } else {
+      setIsMusicPlaying(false);
+      profileAudio.stop();
+    }
     if (typeof window !== 'undefined') {
       if (section === 'extensions') {
         if (window.location.hash !== '#download-extensions') {
@@ -362,7 +427,7 @@ export default function App() {
         return;
       }
 
-      if (editingProfile || adminModalOpen) return;
+      if (activeFilter === 'extensions' || editingProfile || adminModalOpen) return;
       const target = e.target as HTMLElement | null;
       if (
         target &&
@@ -380,7 +445,7 @@ export default function App() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [editingProfile, adminModalOpen, isAdminMode, profiles.length]);
+  }, [activeFilter, editingProfile, adminModalOpen, isAdminMode, profiles.length]);
 
   const filteredProfiles = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -421,6 +486,7 @@ export default function App() {
       <main>
         {isExtensionsPage ? (
           <DownloadExtensionsPage
+            combos={extensionCombos}
             files={extensionFiles}
             searchQuery={extensionSearchQuery}
             onSearchChange={setExtensionSearchQuery}
@@ -431,6 +497,9 @@ export default function App() {
             isAdminMode={isAdminMode}
             onAddLocalFile={handleAddLocalExtensionFile}
             onRemoveLocalFile={handleRemoveLocalExtensionFile}
+            onAddCombo={handleAddExtensionCombo}
+            onRemoveCombo={handleRemoveExtensionCombo}
+            onVideoPlaybackChange={handleClipPlaybackChange}
           />
         ) : (
           <>

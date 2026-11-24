@@ -63,12 +63,16 @@ export function Navbar({
     }
   };
 
+  const isExtensionsTab = activeFilter === 'extensions';
+
   return (
     <header
       className={`fixed top-0 inset-x-0 z-40 transition-colors duration-200 ${
-        scrolled || mobileMenuOpen
-          ? 'bg-[#070709]/95 md:bg-[#070709]/92 md:backdrop-blur-md border-b border-white/10'
-          : 'bg-gradient-to-b from-[#070709]/85 to-transparent'
+        isExtensionsTab
+          ? 'ext-glass-nav md:backdrop-blur-xl'
+          : scrolled || mobileMenuOpen
+            ? 'bg-[#070709]/95 md:bg-[#070709]/92 md:backdrop-blur-md border-b border-white/10'
+            : 'bg-gradient-to-b from-[#070709]/85 to-transparent'
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between gap-8">
@@ -79,7 +83,11 @@ export function Navbar({
             e.preventDefault();
             handleNavClick('home');
           }}
-          className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48] rounded"
+          className={`font-display text-2xl md:text-3xl font-bold tracking-tight whitespace-nowrap shrink-0 focus-visible:outline-none rounded ${
+            isExtensionsTab
+              ? 'text-[#16143E] focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
+              : 'text-white focus-visible:ring-2 focus-visible:ring-[#E11D48]'
+          }`}
         >
           PanelHub
         </a>
@@ -95,19 +103,24 @@ export function Navbar({
               <button
                 key={item.id}
                 type="button"
+                data-no-music-unlock={item.id !== 'home' ? 'true' : undefined}
                 onClick={() => handleNavClick(item.id)}
-                className={`relative py-1 whitespace-nowrap shrink-0 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48] rounded cursor-pointer ${
-                  isActive
-                    ? 'text-white'
-                    : 'text-neutral-300 hover:text-white'
+                className={`relative py-1 whitespace-nowrap shrink-0 transition-colors duration-150 focus-visible:outline-none rounded cursor-pointer ${
+                  isExtensionsTab
+                    ? isActive
+                      ? 'text-[#16143E] font-semibold focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
+                      : 'text-[#3B3875] hover:text-[#16143E] focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
+                    : isActive
+                      ? 'text-white focus-visible:ring-2 focus-visible:ring-[#E11D48]'
+                      : 'text-neutral-300 hover:text-white focus-visible:ring-2 focus-visible:ring-[#E11D48]'
                 }`}
               >
                 {item.label}
                 <span
                   aria-hidden="true"
-                  className={`absolute left-0 right-0 -bottom-0.5 h-0.5 bg-[#E11D48] transition-transform duration-200 origin-left ${
-                    isActive ? 'scale-x-100' : 'scale-x-0'
-                  }`}
+                  className={`absolute left-0 right-0 -bottom-0.5 h-0.5 transition-transform duration-200 origin-left ${
+                    isExtensionsTab ? 'bg-[#5D5AF0]' : 'bg-[#E11D48]'
+                  } ${isActive ? 'scale-x-100' : 'scale-x-0'}`}
                 />
               </button>
             );
@@ -121,7 +134,11 @@ export function Navbar({
             onClick={() => setSearchOpen((prev) => !prev)}
             aria-expanded={searchOpen}
             aria-label={searchOpen ? 'Close search' : 'Search panel members'}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/18 border border-white/15 rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48]"
+            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none ${
+              isExtensionsTab
+                ? 'text-[#16143E] bg-white/65 hover:bg-white/85 border border-white/85 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
+                : 'text-white bg-white/10 hover:bg-white/18 border border-white/15 focus-visible:ring-2 focus-visible:ring-[#E11D48]'
+            }`}
           >
             {searchOpen ? (
               <X className="w-4 h-4" aria-hidden="true" />
@@ -136,7 +153,11 @@ export function Navbar({
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle navigation menu"
-            className="md:hidden inline-flex items-center justify-center w-11 h-11 text-white bg-white/10 border border-white/15 rounded-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48]"
+            className={`md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl cursor-pointer focus-visible:outline-none ${
+              isExtensionsTab
+                ? 'text-[#16143E] bg-white/65 border border-white/85 focus-visible:ring-2 focus-visible:ring-[#5D5AF0]'
+                : 'text-white bg-white/10 border border-white/15 focus-visible:ring-2 focus-visible:ring-[#E11D48]'
+            }`}
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" aria-hidden="true" />
@@ -149,9 +170,20 @@ export function Navbar({
 
       {/* Expandable Search Bar */}
       {searchOpen && (
-        <div className="border-t border-white/10 bg-[#0A0A0D]/95 backdrop-blur-md">
+        <div
+          className={
+            isExtensionsTab
+              ? 'border-t border-white/75 bg-[#E6E5FF]/92 backdrop-blur-md'
+              : 'border-t border-white/10 bg-[#0A0A0D]/95 backdrop-blur-md'
+          }
+        >
           <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-4 flex items-center gap-4">
-            <Search className="w-4 h-4 text-neutral-400 shrink-0" aria-hidden="true" />
+            <Search
+              className={`w-4 h-4 shrink-0 ${
+                isExtensionsTab ? 'text-[#5D5AF0]' : 'text-neutral-400'
+              }`}
+              aria-hidden="true"
+            />
             <input
               ref={searchInputRef}
               type="search"
@@ -173,13 +205,21 @@ export function Navbar({
                   ? 'Search extension files'
                   : 'Search panel members'
               }
-              className="w-full bg-transparent text-sm md:text-base text-white placeholder:text-neutral-500 focus:outline-none"
+              className={`w-full bg-transparent text-sm md:text-base focus:outline-none ${
+                isExtensionsTab
+                  ? 'text-[#16143E] placeholder:text-[#4F4B94]'
+                  : 'text-white placeholder:text-neutral-500'
+              }`}
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="text-xs font-medium text-neutral-300 hover:text-white px-3 py-1.5 rounded border border-white/10 whitespace-nowrap shrink-0 cursor-pointer"
+                className={`text-xs font-medium px-3 py-1.5 rounded border whitespace-nowrap shrink-0 cursor-pointer ${
+                  isExtensionsTab
+                    ? 'text-[#272363] hover:text-[#16143E] border-white/85 bg-white/55'
+                    : 'text-neutral-300 hover:text-white border-white/10'
+                }`}
               >
                 Clear
               </button>
@@ -192,7 +232,11 @@ export function Navbar({
       {mobileMenuOpen && (
         <nav
           aria-label="Mobile navigation"
-          className="md:hidden border-t border-white/10 bg-[#070709] px-6 py-4 flex flex-col gap-2"
+          className={`md:hidden px-6 py-4 flex flex-col gap-2 ${
+            isExtensionsTab
+              ? 'border-t border-white/80 bg-[#E3E2FF]'
+              : 'border-t border-white/10 bg-[#070709]'
+          }`}
         >
           {NAV_ITEMS.map((item) => {
             const isActive = activeFilter === item.id;
@@ -200,11 +244,16 @@ export function Navbar({
               <button
                 key={item.id}
                 type="button"
+                data-no-music-unlock={item.id !== 'home' ? 'true' : undefined}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full text-left px-3 py-3 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  isActive
-                    ? 'bg-[#E11D48] text-white'
-                    : 'text-neutral-300 hover:bg-white/5 hover:text-white'
+                className={`w-full text-left px-3 py-3 text-sm font-medium rounded-xl transition-colors cursor-pointer ${
+                  isExtensionsTab
+                    ? isActive
+                      ? 'ext-glass-cta text-white font-semibold'
+                      : 'text-[#272363] hover:bg-white/60 hover:text-[#16143E]'
+                    : isActive
+                      ? 'bg-[#E11D48] text-white'
+                      : 'text-neutral-300 hover:bg-white/5 hover:text-white'
                 }`}
               >
                 {item.label}

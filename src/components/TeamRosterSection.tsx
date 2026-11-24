@@ -77,6 +77,7 @@ export function TeamRosterSection({
                   role="tab"
                   aria-selected={isSelected}
                   type="button"
+                  data-no-music-unlock={tab.id !== 'home' ? 'true' : undefined}
                   onClick={() => onSelectFilter(tab.id)}
                   className={`relative p-[1.5px] overflow-hidden rounded-lg transition-all duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E11D48] ${
                     isSelected

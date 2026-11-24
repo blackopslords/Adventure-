@@ -393,6 +393,7 @@ export function HeroCarousel({
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                onSelectProfile(idx, true);
                                 setExpandedProfile(profile);
                               }}
                               aria-label={`Expand ${profile.name} full preview`}
